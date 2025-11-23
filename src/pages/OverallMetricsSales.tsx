@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { useData } from '@/context/DataContext';
+import MonthlySalesChart from '@/components/charts/MonthlySalesChart'; // New import
 
 const OverallMetricsSales: React.FC = () => {
   const { data } = useData();
@@ -128,9 +129,7 @@ const OverallMetricsSales: React.FC = () => {
           <li>Dealer Reorder data</li>
           <li>Price Fluctuations</li>
         </ul>
-        <Card className="h-64 flex items-center justify-center text-muted-foreground">
-          <p>Charts and detailed visualizations coming soon!</p>
-        </Card>
+        <MonthlySalesChart /> {/* Replaced placeholder with the new chart */}
       </section>
     </div>
   );
