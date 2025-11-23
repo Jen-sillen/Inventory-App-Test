@@ -5,7 +5,8 @@ import MonthlySalesChart from '@/components/charts/MonthlySalesChart';
 import VendorBulkPurchaseChart from '@/components/charts/VendorBulkPurchaseChart';
 import DealerSalesChart from '@/components/charts/DealerSalesChart';
 import EmployeeActivityChart from '@/components/charts/EmployeeActivityChart';
-import ProductSalesBySizeChart from '@/components/charts/ProductSalesBySizeChart'; // New import
+import ProductSalesBySizeChart from '@/components/charts/ProductSalesBySizeChart';
+import ProductProfitChart from '@/components/charts/ProductProfitChart'; // New import
 
 const OverallMetricsSales: React.FC = () => {
   const { data } = useData();
@@ -137,7 +138,8 @@ const OverallMetricsSales: React.FC = () => {
         <VendorBulkPurchaseChart />
         <DealerSalesChart />
         <EmployeeActivityChart />
-        <ProductSalesBySizeChart /> {/* New chart added here */}
+        <ProductSalesBySizeChart />
+        <ProductProfitChart /> {/* New chart added here */}
       </section>
     </div>
   );

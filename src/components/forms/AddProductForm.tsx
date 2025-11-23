@@ -25,6 +25,7 @@ const productFormSchema = z.object({
   size: z.string().min(1, { message: "Product size is required." }),
   isBulk: z.boolean().default(false),
   quantity: z.coerce.number().min(0, { message: "Quantity cannot be negative." }).default(0),
+  cost: z.coerce.number().min(0, { message: "Cost cannot be negative." }).default(0), // New: Cost field
   locationId: z.string().optional(),
 });
 
@@ -42,6 +43,7 @@ const AddProductForm: React.FC<AddProductFormProps> = ({ onSuccess }) => {
       size: "",
       isBulk: false,
       quantity: 0,
+      cost: 0, // New: Default cost
       locationId: "",
     },
   });
@@ -57,6 +59,7 @@ const AddProductForm: React.FC<AddProductFormProps> = ({ onSuccess }) => {
       size: values.size,
       isBulk: values.isBulk,
       quantity: values.quantity,
+      cost: values.cost, // New: Assign cost
       locationId: values.locationId || undefined,
     };
     addProduct(newProduct);
@@ -135,6 +138,19 @@ const AddProductForm: React.FC<AddProductFormProps> = ({ onSuccess }) => {
               <FormLabel>Initial Quantity</FormLabel>
               <FormControl>
                 <Input type="number" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="cost" // New: Cost field
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Cost per Unit</FormLabel>
+              <FormControl>
+                <Input type="number" step="0.01" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

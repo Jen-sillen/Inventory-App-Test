@@ -32,6 +32,7 @@ export interface Product {
   size: string; // e.g., "bulk", "small package", "large package"
   isBulk: boolean;
   quantity: number;
+  cost: number; // New: Cost of the product
   locationId?: string; // Link to ShelfLocation
 }
 
