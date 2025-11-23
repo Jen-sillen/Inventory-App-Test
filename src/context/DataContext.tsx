@@ -10,10 +10,10 @@ import {
   Product,
   BulkDelivery,
   BulkBreaking,
-  InventoryMovement,
+  InventoryMovement, // New import
   SaleTransaction,
   EmployeePayment,
-  ProductReceipt, // New import
+  ProductReceipt,
 } from '@/types/inventory';
 
 const LOCAL_STORAGE_KEY = 'inventory-app-data';
@@ -27,10 +27,10 @@ const initialAppState: AppState = {
   products: [],
   bulkDeliveries: [],
   bulkBreakings: [],
-  inventoryMovements: [],
+  inventoryMovements: [], // Initialize new array
   saleTransactions: [],
   employeePayments: [],
-  productReceipts: [], // Initialize new array
+  productReceipts: [],
 };
 
 interface DataContextType {
@@ -44,7 +44,8 @@ interface DataContextType {
   addProduct: (product: Product) => void;
   addSaleTransaction: (sale: SaleTransaction) => void;
   addBulkDelivery: (delivery: BulkDelivery) => void;
-  addProductReceipt: (receipt: ProductReceipt) => void; // New function
+  addProductReceipt: (receipt: ProductReceipt) => void;
+  addInventoryMovement: (movement: InventoryMovement) => void; // New function
   // ... more functions will be added as we build out features
 }
 
@@ -174,6 +175,33 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
   };
 
+  const addInventoryMovement = (movement: InventoryMovement) => {
+    setAppState(prevState => {
+      const updatedProducts = prevState.products.map(product => {
+        if (product.sku === movement.productId) {
+          if (product.quantity < movement.quantity) {
+            throw new Error(`Not enough stock for product ${product.name} (${product.sku}) at location ${movement.fromLocationId || 'any'}. Available: ${product.quantity}, Requested: ${movement.quantity}`);
+          }
+          // Update the product's location to the new location
+          return { ...product, locationId: movement.toLocationId };
+        }
+        return product;
+      });
+
+      // Check if the product exists
+      const targetProduct = prevState.products.find(p => p.sku === movement.productId);
+      if (!targetProduct) {
+        throw new Error(`Product with SKU ${movement.productId} not found.`);
+      }
+
+      return {
+        ...prevState,
+        inventoryMovements: [...prevState.inventoryMovements, movement],
+        products: updatedProducts,
+      };
+    });
+  };
+
   const contextValue: DataContextType = {
     data: appState,
     setAppState,
@@ -186,6 +214,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     addSaleTransaction,
     addBulkDelivery,
     addProductReceipt,
+    addInventoryMovement,
   };
 
   return <DataContext.Provider value={contextValue}>{children}</DataContext.Provider>;

@@ -1,4 +1,5 @@
 import React from 'react';
+import MoveInventoryForm from '@/components/forms/MoveInventoryForm'; // New import
 
 const MoveInventory: React.FC = () => {
   return (
@@ -8,9 +9,7 @@ const MoveInventory: React.FC = () => {
         This page will allow employees to record the movement of inventory between shelf locations.
       </p>
       <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-        <p className="text-gray-700 dark:text-gray-300">
-          Form for selecting product, current location, new location, and quantity.
-        </p>
+        <MoveInventoryForm />
       </div>
     </div>
   );
