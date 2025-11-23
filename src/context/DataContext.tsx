@@ -59,7 +59,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Add a console log here to inspect appState
   React.useEffect(() => {
-    console.log("DataContext initialized with appState:", appState);
+    console.log("DataContext initialized with appState:", JSON.stringify(appState, null, 2));
   }, [appState]);
 
   const addEmployee = (employee: Employee) => {
