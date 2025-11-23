@@ -11,13 +11,14 @@ interface NavLink {
 }
 
 const mainNavLinks: NavLink[] = [
-  { to: '/', label: 'Overall Metrics & Sales' },
+  { to: '/', label: 'Home' }, // Added Home link
+  { to: '/overall-metrics-sales', label: 'Overall Metrics & Sales' }, // Corrected route
   { to: '/vendor-dealer-sales', label: 'Vendor/Dealer Sales History' },
   { to: '/transaction-log', label: 'Full Transaction Log' },
   { to: '/inventory-snapshot', label: 'Inventory Snapshot' },
   { to: '/ids-skus-qrs', label: 'Full list of IDs/SKUs/QRs' },
   { to: '/todays-transactions', label: 'Today’s Transactions' },
-  { to: '/manage-data', label: 'Manage Data' }, // New link
+  { to: '/manage-data', label: 'Manage Data' },
 ];
 
 const actionLinks: NavLink[] = [
