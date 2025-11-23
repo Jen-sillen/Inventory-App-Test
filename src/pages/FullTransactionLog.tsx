@@ -13,6 +13,8 @@ import { format } from 'date-fns';
 const FullTransactionLog: React.FC = () => {
   const { data } = useData();
 
+  console.log("FullTransactionLog - Data from context:", data); // Diagnostic log
+
   // Helper to get entity names
   const getEmployeeName = (id?: string) => id ? (data.employees.find(e => e.id === id)?.name || `Unknown Employee (${id})`) : 'N/A';
   const getVendorName = (id?: string) => id ? (data.vendors.find(v => v.id === id)?.name || `Unknown Vendor (${id})`) : 'N/A';
@@ -83,13 +85,15 @@ const FullTransactionLog: React.FC = () => {
     })),
   ].sort((a, b) => b.date.getTime() - a.date.getTime()); // Sort by date, newest first
 
+  console.log("FullTransactionLog - All transactions:", allTransactions); // Diagnostic log
+
   return (
     <div className="space-y-6">
       <h2 className="text-3xl font-bold">Full Transaction Log</h2>
       <p className="text-gray-600 dark:text-gray-400">
         This page shows a comprehensive log of all transactions and inventory movements.
       </p>
-      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow overflow-x-auto">
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
         {allTransactions.length === 0 ? (
           <p className="text-muted-foreground text-center">No transactions recorded yet.</p>
         ) : (
