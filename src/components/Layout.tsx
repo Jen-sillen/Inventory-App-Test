@@ -9,7 +9,6 @@ interface LayoutProps {
 }
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
-  console.log("Layout component is rendering!"); // Diagnostic log
   return (
     <div className="flex min-h-screen bg-background text-foreground">
       {/* SidebarNav now handles its own mobile/desktop rendering */}
@@ -19,10 +18,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <h1 className="text-2xl font-bold">Inventory Management</h1>
           {/* Add any header actions/user info here */}
         </header>
-        {/* Temporary diagnostic message */}
-        <div className="p-2 bg-yellow-200 text-yellow-800 text-center">
-          Layout is rendering. If you see this, the issue is likely within the page content.
-        </div>
         <main className="flex-1 p-6 overflow-auto">
           {children}
         </main>
