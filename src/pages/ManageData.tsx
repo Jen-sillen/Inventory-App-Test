@@ -9,7 +9,9 @@ import { useData } from '@/context/DataContext';
 import AddEmployeeForm from '@/components/forms/AddEmployeeForm';
 import AddVendorForm from '@/components/forms/AddVendorForm';
 import AddDealerForm from '@/components/forms/AddDealerForm';
-import AddShelfLocationForm from '@/components/forms/AddShelfLocationForm'; // New import
+import AddShelfLocationForm from '@/components/forms/AddShelfLocationForm';
+import AddDeviceForm from '@/components/forms/AddDeviceForm'; // New import
+import AddProductForm from '@/components/forms/AddProductForm'; // New import
 import { PlusCircle } from 'lucide-react';
 
 const ManageData: React.FC = () => {
@@ -17,8 +19,9 @@ const ManageData: React.FC = () => {
   const [isEmployeeDialogOpen, setIsEmployeeDialogOpen] = useState(false);
   const [isVendorDialogOpen, setIsVendorDialogOpen] = useState(false);
   const [isDealerDialogOpen, setIsDealerDialogOpen] = useState(false);
-  const [isShelfLocationDialogOpen, setIsShelfLocationDialogOpen] = useState(false); // New state
-  // Add state for other dialogs as needed
+  const [isShelfLocationDialogOpen, setIsShelfLocationDialogOpen] = useState(false);
+  const [isDeviceDialogOpen, setIsDeviceDialogOpen] = useState(false); // New state
+  const [isProductDialogOpen, setIsProductDialogOpen] = useState(false); // New state
 
   return (
     <div className="space-y-6">
@@ -183,21 +186,75 @@ const ManageData: React.FC = () => {
         <TabsContent value="devices" className="mt-4">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-xl font-semibold">Devices</h3>
-            <Button>
-              <PlusCircle className="mr-2 h-4 w-4" /> Add Device
-            </Button>
+            <Dialog open={isDeviceDialogOpen} onOpenChange={setIsDeviceDialogOpen}>
+              <DialogTrigger asChild>
+                <Button>
+                  <PlusCircle className="mr-2 h-4 w-4" /> Add Device
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>Add New Device</DialogTitle>
+                </DialogHeader>
+                <AddDeviceForm onSuccess={() => setIsDeviceDialogOpen(false)} />
+              </DialogContent>
+            </Dialog>
           </div>
-          <p className="text-muted-foreground">No devices added yet.</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {data.devices.length === 0 ? (
+              <p className="text-muted-foreground col-span-full">No devices added yet.</p>
+            ) : (
+              data.devices.map((device) => (
+                <Card key={device.id}>
+                  <CardHeader>
+                    <CardTitle>{device.name}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p>ID: {device.id}</p>
+                  </CardContent>
+                </Card>
+              ))
+            )}
+          </div>
         </TabsContent>
 
         <TabsContent value="products" className="mt-4">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-xl font-semibold">Products</h3>
-            <Button>
-              <PlusCircle className="mr-2 h-4 w-4" /> Add Product
-            </Button>
+            <Dialog open={isProductDialogOpen} onOpenChange={setIsProductDialogOpen}>
+              <DialogTrigger asChild>
+                <Button>
+                  <PlusCircle className="mr-2 h-4 w-4" /> Add Product
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>Add New Product</DialogTitle>
+                </DialogHeader>
+                <AddProductForm onSuccess={() => setIsProductDialogOpen(false)} />
+              </DialogContent>
+            </Dialog>
           </div>
-          <p className="text-muted-foreground">No products added yet.</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {data.products.length === 0 ? (
+              <p className="text-muted-foreground col-span-full">No products added yet.</p>
+            ) : (
+              data.products.map((product) => (
+                <Card key={product.sku}>
+                  <CardHeader>
+                    <CardTitle>{product.name}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p>SKU: {product.sku}</p>
+                    <p>Size: {product.size}</p>
+                    <p>Bulk: {product.isBulk ? "Yes" : "No"}</p>
+                    <p>Quantity: {product.quantity}</p>
+                    {product.locationId && <p>Location: {product.locationId}</p>}
+                  </CardContent>
+                </Card>
+              ))
+            )}
+          </div>
         </TabsContent>
       </Tabs>
     </div>
