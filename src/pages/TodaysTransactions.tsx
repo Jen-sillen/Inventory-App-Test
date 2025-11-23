@@ -34,6 +34,11 @@ const TodaysTransactions: React.FC = () => {
       date: t.date,
       details: `Moved ${t.quantity} units of ${getProductName(t.productId)} from ${getLocationName(t.fromLocationId)} to ${getLocationName(t.toLocationId)} by ${getEmployeeName(t.employeeId)}`,
     })),
+    ...data.productReceipts.map(t => ({
+      type: 'Product Receipt',
+      date: t.date,
+      details: `Received ${t.quantity} units of ${getProductName(t.productId)} at ${getLocationName(t.toLocationId)}${t.vendorId ? ` from ${getVendorName(t.vendorId)}` : ''}${t.employeeId ? ` by ${getEmployeeName(t.employeeId)}` : ''}`,
+    })),
   ].filter(transaction => {
     try {
       const transactionDate = new Date(transaction.date);
