@@ -26,10 +26,10 @@ import { showSuccess, showError } from "@/utils/toast";
 import { ProductReceipt } from "@/types/inventory";
 
 const productReceiptFormSchema = z.object({
-  vendorId: z.string().optional(),
+  vendorId: z.string().nullable().optional(), // Allow null for optional
   productId: z.string().min(1, { message: "Product is required." }),
   quantity: z.coerce.number().min(1, { message: "Quantity must be at least 1." }),
-  employeeId: z.string().optional(),
+  employeeId: z.string().nullable().optional(), // Allow null for optional
   toLocationId: z.string().min(1, { message: "Delivery location is required." }),
 });
 
@@ -42,10 +42,10 @@ const AddProductReceiptForm: React.FC<AddProductReceiptFormProps> = ({ onSuccess
   const form = useForm<z.infer<typeof productReceiptFormSchema>>({
     resolver: zodResolver(productReceiptFormSchema),
     defaultValues: {
-      vendorId: "",
+      vendorId: undefined, // Set default to undefined for optional field
       productId: "",
       quantity: 1,
-      employeeId: "",
+      employeeId: undefined, // Set default to undefined for optional field
       toLocationId: "",
     },
   });
@@ -80,13 +80,17 @@ const AddProductReceiptForm: React.FC<AddProductReceiptFormProps> = ({ onSuccess
           render={({ field }) => (
             <FormItem>
               <FormLabel>Vendor (Optional)</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select
+                onValueChange={(value) => field.onChange(value === "null-vendor" ? undefined : value)}
+                value={field.value || "null-vendor"} // Display "No Vendor" if field.value is undefined
+              >
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Select a vendor" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
+                  <SelectItem value="null-vendor">No Vendor</SelectItem> {/* Use non-empty string value */}
                   {data.vendors.map((vendor) => (
                     <SelectItem key={vendor.id} value={vendor.id}>
                       {vendor.name} ({vendor.id})
@@ -144,13 +148,17 @@ const AddProductReceiptForm: React.FC<AddProductReceiptFormProps> = ({ onSuccess
           render={({ field }) => (
             <FormItem>
               <FormLabel>Employee (Optional)</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select
+                onValueChange={(value) => field.onChange(value === "null-employee" ? undefined : value)}
+                value={field.value || "null-employee"} // Display "No Employee" if field.value is undefined
+              >
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Select an employee" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
+                  <SelectItem value="null-employee">No Employee</SelectItem> {/* Use non-empty string value */}
                   {data.employees.map((employee) => (
                     <SelectItem key={employee.id} value={employee.id}>
                       {employee.name} ({employee.id})

@@ -27,7 +27,7 @@ import { InventoryMovement } from "@/types/inventory";
 
 const moveInventoryFormSchema = z.object({
   productId: z.string().min(1, { message: "Product is required." }),
-  fromLocationId: z.string().optional(), // Can be empty if product has no current location
+  fromLocationId: z.string().nullable().optional(), // Allow null for optional
   toLocationId: z.string().min(1, { message: "Destination location is required." }),
   quantity: z.coerce.number().min(1, { message: "Quantity must be at least 1." }),
   employeeId: z.string().min(1, { message: "Employee is required." }),
@@ -43,7 +43,7 @@ const MoveInventoryForm: React.FC<MoveInventoryFormProps> = ({ onSuccess }) => {
     resolver: zodResolver(moveInventoryFormSchema),
     defaultValues: {
       productId: "",
-      fromLocationId: "",
+      fromLocationId: undefined, // Set default to undefined for optional field
       toLocationId: "",
       quantity: 1,
       employeeId: "",
@@ -54,7 +54,7 @@ const MoveInventoryForm: React.FC<MoveInventoryFormProps> = ({ onSuccess }) => {
     const newMovement: InventoryMovement = {
       id: `MOVE-${Date.now()}`, // Simple unique ID
       productId: values.productId,
-      fromLocationId: values.fromLocationId || undefined,
+      fromLocationId: values.fromLocationId || undefined, // Ensure it's undefined if null
       toLocationId: values.toLocationId,
       quantity: values.quantity,
       date: new Date().toISOString(),
@@ -82,7 +82,7 @@ const MoveInventoryForm: React.FC<MoveInventoryFormProps> = ({ onSuccess }) => {
     if (selectedProduct && productCurrentLocation) {
       form.setValue('fromLocationId', productCurrentLocation);
     } else if (selectedProduct && !productCurrentLocation) {
-      form.setValue('fromLocationId', ''); // Clear if product has no location
+      form.setValue('fromLocationId', undefined); // Clear if product has no location
     }
   }, [selectedProduct, productCurrentLocation, form]);
 
@@ -135,14 +135,17 @@ const MoveInventoryForm: React.FC<MoveInventoryFormProps> = ({ onSuccess }) => {
           render={({ field }) => (
             <FormItem>
               <FormLabel>From Location (Current)</FormLabel>
-              <Select onValueChange={field.onChange} value={field.value}>
+              <Select
+                onValueChange={(value) => field.onChange(value === "null-location" ? undefined : value)}
+                value={field.value || "null-location"} // Display "No specific location" if field.value is undefined
+              >
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Select current location (optional)" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="">No specific location</SelectItem> {/* Option for products without a set location */}
+                  <SelectItem value="null-location">No specific location</SelectItem> {/* Use non-empty string value */}
                   {data.shelfLocations.map((location) => (
                     <SelectItem key={location.id} value={location.id}>
                       {location.name} ({location.id})
