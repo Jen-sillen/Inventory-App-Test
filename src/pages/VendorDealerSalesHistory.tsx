@@ -91,7 +91,7 @@ const VendorDealerSalesHistory: React.FC = () => {
                     {entry.products.map((item, prodIndex) => (
                       <div key={prodIndex}>
                         {getProductName(item.sku)} (Qty: {item.quantity})
-                        {item.price > 0 && ` @ $${item.price.toFixed(2)}/unit`}
+                        {typeof item.price === 'number' && item.price > 0 && ` @ $${item.price.toFixed(2)}/unit`}
                       </div>
                     ))}
                   </TableCell>

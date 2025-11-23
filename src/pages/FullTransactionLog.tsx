@@ -32,7 +32,7 @@ const FullTransactionLog: React.FC = () => {
           Sold to {getDealerName(t.dealerId)} by {getEmployeeName(t.employeeId)}. Total: ${t.totalAmount.toFixed(2)}
           <ul className="list-disc list-inside ml-4">
             {t.productsSold.map((p, i) => (
-              <li key={i}>{getProductName(p.sku)} (Qty: {p.quantity}) @ ${p.price.toFixed(2)}/unit</li>
+              <li key={i}>{getProductName(p.sku)} (Qty: {p.quantity}) @ {typeof p.price === 'number' ? `$${p.price.toFixed(2)}` : 'N/A'}/unit</li>
             ))}
           </ul>
         </>
