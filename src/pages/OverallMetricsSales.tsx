@@ -117,23 +117,7 @@ const OverallMetricsSales: React.FC = () => {
 
       <section className="space-y-4">
         <h3 className="text-2xl font-semibold">Metrics Visualizations</h3>
-        <p className="text-gray-600 dark:text-gray-400">
-          This section will include tabs to visualize data by various criteria:
-        </p>
-        <ul className="list-disc list-inside text-gray-700 dark:text-gray-300">
-          <li>Bulk Purchase totals/frequency by vendor and product type</li>
-          <li>Sale totals/frequency by Dealer and product type</li>
-          <li>Purchase/Sales totals/frequency by Employee</li>
-          <li>Average turnaround of bulk product by types</li>
-          <li>Average Profit by product type</li>
-          <li>Net/Gross Profits and Spending</li>
-          <li>Breakdown of gross by product type</li>
-          <li>Monthly Overview</li>
-          <li>Weekly Overview</li>
-          <li>Seasonal Trending</li>
-          <li>Dealer Reorder data</li>
-          <li>Price Fluctuations</li>
-        </ul>
+        {/* Removed the bullet points section as requested */}
         <MonthlySalesChart />
         <VendorBulkPurchaseChart />
         <DealerSalesChart />
