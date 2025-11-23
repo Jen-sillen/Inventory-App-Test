@@ -1,12 +1,27 @@
 import React from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { useData } from '@/context/DataContext';
 
 const OverallMetricsSales: React.FC = () => {
+  const { data } = useData();
+
+  // Calculate total sales amount
+  const totalSales = data.saleTransactions.reduce(
+    (sum, transaction) => sum + transaction.totalAmount,
+    0
+  );
+
+  // Count total products (unique SKUs)
+  const totalProducts = data.products.length;
+
+  // Count active vendors
+  const activeVendors = data.vendors.length;
+
   return (
     <div className="space-y-6">
       <h2 className="text-3xl font-bold">Overall Metrics & Sales</h2>
       <p className="text-gray-600 dark:text-gray-400">
-        This page will display key performance indicators and sales data.
+        This page displays key performance indicators and sales data.
       </p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -15,7 +30,7 @@ const OverallMetricsSales: React.FC = () => {
             <CardTitle>Total Sales</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-4xl font-bold">$0.00</p>
+            <p className="text-4xl font-bold">${totalSales.toFixed(2)}</p>
           </CardContent>
         </Card>
         <Card>
@@ -23,7 +38,7 @@ const OverallMetricsSales: React.FC = () => {
             <CardTitle>Total Products</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-4xl font-bold">0</p>
+            <p className="text-4xl font-bold">{totalProducts}</p>
           </CardContent>
         </Card>
         <Card>
@@ -31,7 +46,7 @@ const OverallMetricsSales: React.FC = () => {
             <CardTitle>Active Vendors</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-4xl font-bold">0</p>
+            <p className="text-4xl font-bold">{activeVendors}</p>
           </CardContent>
         </Card>
       </div>
@@ -56,7 +71,7 @@ const OverallMetricsSales: React.FC = () => {
           <li>Price Fluctuations</li>
         </ul>
         <Card className="h-64 flex items-center justify-center text-muted-foreground">
-          <p>Chart placeholder</p>
+          <p>Charts and detailed visualizations coming soon!</p>
         </Card>
       </section>
     </div>
