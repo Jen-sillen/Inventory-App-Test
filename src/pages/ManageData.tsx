@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useData } from '@/context/DataContext';
 import AddEmployeeForm from '@/components/forms/AddEmployeeForm';
 import AddVendorForm from '@/components/forms/AddVendorForm';
-import AddDealerForm from from '@/components/forms/AddDealerForm';
+import AddDealerForm from '@/components/forms/AddDealerForm';
 import AddShelfLocationForm from '@/components/forms/AddShelfLocationForm';
 import AddDeviceForm from '@/components/forms/AddDeviceForm';
 import AddProductForm from '@/components/forms/AddProductForm';
