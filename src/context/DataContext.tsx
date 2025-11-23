@@ -203,16 +203,6 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const addBulkDelivery = (delivery: BulkDelivery) => {
     setAppState(prevState => {
-      const updatedProducts = prevState.products.map(product => {
-        if (product.sku === delivery.productId) {
-          if (!product.isBulk) {
-            throw new Error(`Product ${product.name} (${product.sku}) is not a bulk product.`);
-          }
-          return { ...product, quantity: product.quantity + delivery.quantity };
-        }
-        return product;
-      });
-
       // Check if the product exists and is a bulk product
       const targetProduct = prevState.products.find(p => p.sku === delivery.productId);
       if (!targetProduct) {
@@ -221,6 +211,19 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (!targetProduct.isBulk) {
         throw new Error(`Product ${targetProduct.name} (${targetProduct.sku}) is not a bulk product.`);
       }
+
+      const updatedProducts = prevState.products.map(product => {
+        if (product.sku === delivery.productId) {
+          const oldQuantity = product.quantity;
+          const oldCost = product.cost;
+          const newQuantity = oldQuantity + delivery.quantity;
+          const newTotalCost = (oldQuantity * oldCost) + delivery.totalAmount;
+          const newCost = newQuantity > 0 ? newTotalCost / newQuantity : 0; // Weighted average cost
+
+          return { ...product, quantity: newQuantity, cost: newCost };
+        }
+        return product;
+      });
 
       return {
         ...prevState,

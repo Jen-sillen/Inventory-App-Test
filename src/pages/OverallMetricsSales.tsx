@@ -17,6 +17,12 @@ const OverallMetricsSales: React.FC = () => {
     0
   );
 
+  // Calculate total purchase amount
+  const totalPurchases = data.bulkDeliveries.reduce(
+    (sum, delivery) => sum + delivery.totalAmount,
+    0
+  );
+
   // Count total products (unique SKUs)
   const totalProducts = data.products.length;
 
@@ -55,6 +61,14 @@ const OverallMetricsSales: React.FC = () => {
           </CardHeader>
           <CardContent>
             <p className="text-4xl font-bold">${totalSales.toFixed(2)}</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Total Purchases</CardTitle> {/* New Metric */}
+          </CardHeader>
+          <CardContent>
+            <p className="text-4xl font-bold">${totalPurchases.toFixed(2)}</p>
           </CardContent>
         </Card>
         <Card>
@@ -117,13 +131,12 @@ const OverallMetricsSales: React.FC = () => {
 
       <section className="space-y-4">
         <h3 className="text-2xl font-semibold">Metrics Visualizations</h3>
-        {/* Removed the bullet points section as requested */}
         <MonthlySalesChart />
         <VendorBulkPurchaseChart />
         <DealerSalesChart />
         <EmployeeActivityChart />
         <ProductSalesBySizeChart />
-        <ProductProfitChart /> {/* New chart added here */}
+        <ProductProfitChart />
       </section>
     </div>
   );

@@ -41,6 +41,7 @@ export interface BulkDelivery {
   vendorId: string;
   productId: string; // SKU of the bulk product
   quantity: number;
+  totalAmount: number; // New: Total amount paid for this bulk delivery
   date: string;
   employeeId?: string; // Employee who tracked the delivery
 }

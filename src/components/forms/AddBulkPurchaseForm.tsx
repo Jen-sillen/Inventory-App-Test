@@ -29,6 +29,7 @@ const bulkPurchaseFormSchema = z.object({
   vendorId: z.string().min(1, { message: "Vendor is required." }),
   productId: z.string().min(1, { message: "Bulk Product is required." }),
   quantity: z.coerce.number().min(1, { message: "Quantity must be at least 1." }),
+  totalAmount: z.coerce.number().min(0.01, { message: "Total amount must be greater than 0." }), // New: Total amount field
   employeeId: z.string().optional(),
 });
 
@@ -44,6 +45,7 @@ const AddBulkPurchaseForm: React.FC<AddBulkPurchaseFormProps> = ({ onSuccess }) 
       vendorId: "",
       productId: "",
       quantity: 1,
+      totalAmount: 0, // New: Default total amount
       employeeId: "",
     },
   });
@@ -54,6 +56,7 @@ const AddBulkPurchaseForm: React.FC<AddBulkPurchaseFormProps> = ({ onSuccess }) 
       vendorId: values.vendorId,
       productId: values.productId,
       quantity: values.quantity,
+      totalAmount: values.totalAmount, // New: Assign total amount
       date: new Date().toISOString(),
       employeeId: values.employeeId || undefined,
     };
@@ -129,6 +132,20 @@ const AddBulkPurchaseForm: React.FC<AddBulkPurchaseFormProps> = ({ onSuccess }) 
               <FormLabel>Quantity Purchased</FormLabel>
               <FormControl>
                 <Input type="number" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="totalAmount" // New: Total amount field
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Total Purchase Amount</FormLabel>
+              <FormControl>
+                <Input type="number" step="0.01" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

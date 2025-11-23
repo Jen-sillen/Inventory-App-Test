@@ -34,9 +34,9 @@ const VendorDealerSalesHistory: React.FC = () => {
       products: [{
         sku: delivery.productId,
         quantity: delivery.quantity,
-        price: 0, // Price not tracked for purchases in this context
+        price: delivery.totalAmount / delivery.quantity, // Calculate unit price for display
       }],
-      totalAmount: 0, // Total amount not tracked for purchases in this context
+      totalAmount: delivery.totalAmount, // Now includes totalAmount
       employeeId: delivery.employeeId,
     })),
   ].sort((a, b) => b.date.getTime() - a.date.getTime()); // Sort by date, newest first
@@ -87,12 +87,12 @@ const VendorDealerSalesHistory: React.FC = () => {
                     {entry.products.map((item, prodIndex) => (
                       <div key={prodIndex}>
                         {getProductName(item.sku)} (Qty: {item.quantity})
-                        {entry.type === 'Sale' && item.price > 0 && ` @ $${item.price.toFixed(2)}/unit`}
+                        {item.price > 0 && ` @ $${item.price.toFixed(2)}/unit`}
                       </div>
                     ))}
                   </TableCell>
                   <TableCell className="text-right">
-                    {entry.type === 'Sale' ? `$${entry.totalAmount.toFixed(2)}` : 'N/A'}
+                    {`$${entry.totalAmount.toFixed(2)}`}
                   </TableCell>
                 </TableRow>
               ))}

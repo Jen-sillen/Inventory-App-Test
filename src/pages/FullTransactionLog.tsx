@@ -41,7 +41,7 @@ const FullTransactionLog: React.FC = () => {
       date: new Date(t.date),
       details: (
         <>
-          Purchased {t.quantity} units of {getProductName(t.productId)} from {getVendorName(t.vendorId)}
+          Purchased {t.quantity} units of {getProductName(t.productId)} from {getVendorName(t.vendorId)} for ${t.totalAmount.toFixed(2)}
           {t.employeeId && ` by ${getEmployeeName(t.employeeId)}`}
         </>
       ),

@@ -17,29 +17,29 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 const VendorBulkPurchaseChart: React.FC = () => {
   const { data } = useData();
 
-  // Aggregate bulk purchase data by vendor
-  const vendorPurchaseMap = new Map<string, number>(); // Key: vendorId, Value: total quantity
+  // Aggregate bulk purchase data by vendor, now summing totalAmount
+  const vendorPurchaseMap = new Map<string, number>(); // Key: vendorId, Value: total purchase amount
 
   data.bulkDeliveries.forEach(delivery => {
-    const currentQuantity = vendorPurchaseMap.get(delivery.vendorId) || 0;
-    vendorPurchaseMap.set(delivery.vendorId, currentQuantity + delivery.quantity);
+    const currentAmount = vendorPurchaseMap.get(delivery.vendorId) || 0;
+    vendorPurchaseMap.set(delivery.vendorId, currentAmount + delivery.totalAmount);
   });
 
   // Convert map to array of objects for Recharts
   const chartData = Array.from(vendorPurchaseMap.entries())
-    .map(([vendorId, totalQuantity]) => {
+    .map(([vendorId, totalAmount]) => {
       const vendor = data.vendors.find(v => v.id === vendorId);
       return {
         vendorName: vendor ? vendor.name : `Unknown Vendor (${vendorId})`,
-        quantity: totalQuantity,
+        totalAmount: parseFloat(totalAmount.toFixed(2)),
       };
     })
-    .sort((a, b) => b.quantity - a.quantity); // Sort by quantity, highest first
+    .sort((a, b) => b.totalAmount - a.totalAmount); // Sort by total amount, highest first
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Bulk Purchases by Vendor</CardTitle>
+        <CardTitle>Bulk Purchases by Vendor (Total Value)</CardTitle>
       </CardHeader>
       <CardContent>
         {chartData.length === 0 ? (
@@ -59,15 +59,15 @@ const VendorBulkPurchaseChart: React.FC = () => {
             >
               <CartesianGrid strokeDasharray="3 3" className="stroke-gray-200 dark:stroke-gray-700" />
               <XAxis dataKey="vendorName" className="text-sm" />
-              <YAxis className="text-sm" />
+              <YAxis className="text-sm" tickFormatter={(value) => `$${value}`} /> {/* Formatter for currency */}
               <Tooltip
-                formatter={(value: number) => [`${value} units`, 'Quantity']}
+                formatter={(value: number) => [`$${value.toFixed(2)}`, 'Total Purchased']}
                 labelFormatter={(label: string) => `Vendor: ${label}`}
                 contentStyle={{ backgroundColor: 'hsl(var(--background))', border: '1px solid hsl(var(--border))', borderRadius: '0.5rem' }}
                 labelStyle={{ color: 'hsl(var(--foreground))' }}
               />
               <Legend />
-              <Bar dataKey="quantity" fill="hsl(var(--secondary))" name="Total Quantity Purchased" />
+              <Bar dataKey="totalAmount" fill="hsl(var(--secondary))" name="Total Purchase Value" />
             </BarChart>
           </ResponsiveContainer>
         )}
