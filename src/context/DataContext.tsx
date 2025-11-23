@@ -40,6 +40,7 @@ interface DataContextType {
   addShelfLocation: (location: ShelfLocation) => void;
   addDevice: (device: Device) => void;
   addProduct: (product: Product) => void;
+  addSaleTransaction: (sale: SaleTransaction) => void; // New function
   // ... more functions will be added as we build out features
 }
 
@@ -90,6 +91,27 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }));
   };
 
+  const addSaleTransaction = (sale: SaleTransaction) => {
+    setAppState(prevState => {
+      const updatedProducts = prevState.products.map(product => {
+        const soldItem = sale.productsSold.find(item => item.sku === product.sku);
+        if (soldItem) {
+          if (product.quantity < soldItem.quantity) {
+            throw new Error(`Not enough stock for product ${product.name} (${product.sku}). Available: ${product.quantity}, Requested: ${soldItem.quantity}`);
+          }
+          return { ...product, quantity: product.quantity - soldItem.quantity };
+        }
+        return product;
+      });
+
+      return {
+        ...prevState,
+        saleTransactions: [...prevState.saleTransactions, sale],
+        products: updatedProducts,
+      };
+    });
+  };
+
   const contextValue: DataContextType = {
     data: appState,
     setAppState,
@@ -99,6 +121,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     addShelfLocation,
     addDevice,
     addProduct,
+    addSaleTransaction,
   };
 
   return <DataContext.Provider value={contextValue}>{children}</DataContext.Provider>;
