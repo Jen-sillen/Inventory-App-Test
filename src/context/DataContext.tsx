@@ -40,7 +40,8 @@ interface DataContextType {
   addShelfLocation: (location: ShelfLocation) => void;
   addDevice: (device: Device) => void;
   addProduct: (product: Product) => void;
-  addSaleTransaction: (sale: SaleTransaction) => void; // New function
+  addSaleTransaction: (sale: SaleTransaction) => void;
+  addBulkDelivery: (delivery: BulkDelivery) => void; // New function
   // ... more functions will be added as we build out features
 }
 
@@ -112,6 +113,35 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
   };
 
+  const addBulkDelivery = (delivery: BulkDelivery) => {
+    setAppState(prevState => {
+      const updatedProducts = prevState.products.map(product => {
+        if (product.sku === delivery.productId) {
+          if (!product.isBulk) {
+            throw new Error(`Product ${product.name} (${product.sku}) is not a bulk product.`);
+          }
+          return { ...product, quantity: product.quantity + delivery.quantity };
+        }
+        return product;
+      });
+
+      // Check if the product exists and is a bulk product
+      const targetProduct = prevState.products.find(p => p.sku === delivery.productId);
+      if (!targetProduct) {
+        throw new Error(`Product with SKU ${delivery.productId} not found.`);
+      }
+      if (!targetProduct.isBulk) {
+        throw new Error(`Product ${targetProduct.name} (${targetProduct.sku}) is not a bulk product.`);
+      }
+
+      return {
+        ...prevState,
+        bulkDeliveries: [...prevState.bulkDeliveries, delivery],
+        products: updatedProducts,
+      };
+    });
+  };
+
   const contextValue: DataContextType = {
     data: appState,
     setAppState,
@@ -122,6 +152,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     addDevice,
     addProduct,
     addSaleTransaction,
+    addBulkDelivery,
   };
 
   return <DataContext.Provider value={contextValue}>{children}</DataContext.Provider>;
