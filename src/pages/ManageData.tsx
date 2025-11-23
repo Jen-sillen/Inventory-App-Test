@@ -8,14 +8,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useData } from '@/context/DataContext';
 import AddEmployeeForm from '@/components/forms/AddEmployeeForm';
 import AddVendorForm from '@/components/forms/AddVendorForm';
-import AddDealerForm from '@/components/forms/AddDealerForm'; // New import
+import AddDealerForm from '@/components/forms/AddDealerForm';
+import AddShelfLocationForm from '@/components/forms/AddShelfLocationForm'; // New import
 import { PlusCircle } from 'lucide-react';
 
 const ManageData: React.FC = () => {
   const { data } = useData();
   const [isEmployeeDialogOpen, setIsEmployeeDialogOpen] = useState(false);
   const [isVendorDialogOpen, setIsVendorDialogOpen] = useState(false);
-  const [isDealerDialogOpen, setIsDealerDialogOpen] = useState(false); // New state
+  const [isDealerDialogOpen, setIsDealerDialogOpen] = useState(false);
+  const [isShelfLocationDialogOpen, setIsShelfLocationDialogOpen] = useState(false); // New state
   // Add state for other dialogs as needed
 
   return (
@@ -145,11 +147,37 @@ const ManageData: React.FC = () => {
         <TabsContent value="shelf-locations" className="mt-4">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-xl font-semibold">Shelf Locations</h3>
-            <Button>
-              <PlusCircle className="mr-2 h-4 w-4" /> Add Shelf Location
-            </Button>
+            <Dialog open={isShelfLocationDialogOpen} onOpenChange={setIsShelfLocationDialogOpen}>
+              <DialogTrigger asChild>
+                <Button>
+                  <PlusCircle className="mr-2 h-4 w-4" /> Add Shelf Location
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>Add New Shelf Location</DialogTitle>
+                </DialogHeader>
+                <AddShelfLocationForm onSuccess={() => setIsShelfLocationDialogOpen(false)} />
+              </DialogContent>
+            </Dialog>
           </div>
-          <p className="text-muted-foreground">No shelf locations added yet.</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {data.shelfLocations.length === 0 ? (
+              <p className="text-muted-foreground col-span-full">No shelf locations added yet.</p>
+            ) : (
+              data.shelfLocations.map((location) => (
+                <Card key={location.id}>
+                  <CardHeader>
+                    <CardTitle>{location.name}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p>ID: {location.id}</p>
+                    <p>QR Code: {location.qrCode}</p>
+                  </CardContent>
+                </Card>
+              ))
+            )}
+          </div>
         </TabsContent>
 
         <TabsContent value="devices" className="mt-4">
