@@ -17,6 +17,24 @@ const OverallMetricsSales: React.FC = () => {
   // Count active vendors
   const activeVendors = data.vendors.length;
 
+  // Count total employees
+  const totalEmployees = data.employees.length;
+
+  // Count total dealers
+  const totalDealers = data.dealers.length;
+
+  // Count total shelf locations
+  const totalShelfLocations = data.shelfLocations.length;
+
+  // Count total devices
+  const totalDevices = data.devices.length;
+
+  // Calculate total quantity of all products
+  const totalProductQuantity = data.products.reduce(
+    (sum, product) => sum + product.quantity,
+    0
+  );
+
   return (
     <div className="space-y-6">
       <h2 className="text-3xl font-bold">Overall Metrics & Sales</h2>
@@ -24,7 +42,7 @@ const OverallMetricsSales: React.FC = () => {
         This page displays key performance indicators and sales data.
       </p>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         <Card>
           <CardHeader>
             <CardTitle>Total Sales</CardTitle>
@@ -35,10 +53,18 @@ const OverallMetricsSales: React.FC = () => {
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle>Total Products</CardTitle>
+            <CardTitle>Total Products (Unique SKUs)</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-4xl font-bold">{totalProducts}</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Total Product Quantity</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-4xl font-bold">{totalProductQuantity}</p>
           </CardContent>
         </Card>
         <Card>
@@ -47,6 +73,38 @@ const OverallMetricsSales: React.FC = () => {
           </CardHeader>
           <CardContent>
             <p className="text-4xl font-bold">{activeVendors}</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Total Employees</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-4xl font-bold">{totalEmployees}</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Total Dealers</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-4xl font-bold">{totalDealers}</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Total Shelf Locations</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-4xl font-bold">{totalShelfLocations}</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Total Devices</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-4xl font-bold">{totalDevices}</p>
           </CardContent>
         </Card>
       </div>
