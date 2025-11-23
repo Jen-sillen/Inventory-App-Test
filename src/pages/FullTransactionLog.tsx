@@ -53,7 +53,7 @@ const FullTransactionLog: React.FC = () => {
       date: new Date(t.date),
       details: (
         <>
-          Broke down {t.quantityToBreak} units of bulk {getProductName(t.bulkProductId)} by {getEmployeeName(t.employeeId)}.
+          Broke down {t.quantityToBreak ?? 'N/A'} units of bulk {getProductName(t.bulkProductId)} by {getEmployeeName(t.employeeId)}.
           Resulting products:
           <ul className="list-disc list-inside ml-4">
             {t.brokenIntoProducts.map((p, i) => (

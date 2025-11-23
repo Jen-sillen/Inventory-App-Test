@@ -49,6 +49,7 @@ export interface BulkDelivery {
 export interface BulkBreaking {
   id: string;
   bulkProductId: string; // SKU of the bulk product
+  quantityToBreak: number; // New: Quantity of bulk product broken down
   brokenIntoProducts: { sku: string; quantity: number }[]; // SKUs and quantities of sellable packages
   date: string;
   employeeId: string;
