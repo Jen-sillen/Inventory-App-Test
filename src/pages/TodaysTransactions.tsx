@@ -1,6 +1,10 @@
 import React from 'react';
+import { useData } from '@/context/DataContext';
+// Removed date-fns and table imports for now
 
 const TodaysTransactions: React.FC = () => {
+  const { data } = useData();
+
   return (
     <div className="space-y-6">
       <h2 className="text-3xl font-bold">Today’s Transactions</h2>
@@ -8,7 +12,8 @@ const TodaysTransactions: React.FC = () => {
         This page displays all transactions that have occurred today.
       </p>
       <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow overflow-x-auto">
-        <p>This is a very simple test message for Today's Transactions page.</p>
+        <p>This is a test message for Today's Transactions page.</p>
+        <p>Number of employees: {data.employees.length}</p>
       </div>
     </div>
   );
