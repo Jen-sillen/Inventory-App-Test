@@ -10,18 +10,36 @@ import AddEmployeeForm from '@/components/forms/AddEmployeeForm';
 import AddVendorForm from '@/components/forms/AddVendorForm';
 import AddDealerForm from '@/components/forms/AddDealerForm';
 import AddShelfLocationForm from '@/components/forms/AddShelfLocationForm';
-import AddDeviceForm from '@/components/forms/AddDeviceForm'; // New import
-import AddProductForm from '@/components/forms/AddProductForm'; // New import
-import { PlusCircle } from 'lucide-react';
+import AddDeviceForm from '@/components/forms/AddDeviceForm';
+import AddProductForm from '@/components/forms/AddProductForm';
+import EditEmployeeForm from '@/components/forms/EditEmployeeForm'; // New import
+import EditProductForm from '@/components/forms/EditProductForm'; // New import
+import { PlusCircle, Edit } from 'lucide-react';
 
 const ManageData: React.FC = () => {
   const { data } = useData();
-  const [isEmployeeDialogOpen, setIsEmployeeDialogOpen] = useState(false);
+  const [isEmployeeAddDialogOpen, setIsEmployeeAddDialogOpen] = useState(false);
+  const [isEmployeeEditDialogOpen, setIsEmployeeEditDialogOpen] = useState(false); // New state
+  const [selectedEmployee, setSelectedEmployee] = useState<any>(null); // New state
+
   const [isVendorDialogOpen, setIsVendorDialogOpen] = useState(false);
   const [isDealerDialogOpen, setIsDealerDialogOpen] = useState(false);
   const [isShelfLocationDialogOpen, setIsShelfLocationDialogOpen] = useState(false);
-  const [isDeviceDialogOpen, setIsDeviceDialogOpen] = useState(false); // New state
-  const [isProductDialogOpen, setIsProductDialogOpen] = useState(false); // New state
+  const [isDeviceDialogOpen, setIsDeviceDialogOpen] = useState(false);
+  
+  const [isProductAddDialogOpen, setIsProductAddDialogOpen] = useState(false);
+  const [isProductEditDialogOpen, setIsProductEditDialogOpen] = useState(false); // New state
+  const [selectedProduct, setSelectedProduct] = useState<any>(null); // New state
+
+  const handleEditEmployee = (employee: any) => {
+    setSelectedEmployee(employee);
+    setIsEmployeeEditDialogOpen(true);
+  };
+
+  const handleEditProduct = (product: any) => {
+    setSelectedProduct(product);
+    setIsProductEditDialogOpen(true);
+  };
 
   return (
     <div className="space-y-6">
@@ -43,7 +61,7 @@ const ManageData: React.FC = () => {
         <TabsContent value="employees" className="mt-4">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-xl font-semibold">Employees</h3>
-            <Dialog open={isEmployeeDialogOpen} onOpenChange={setIsEmployeeDialogOpen}>
+            <Dialog open={isEmployeeAddDialogOpen} onOpenChange={setIsEmployeeAddDialogOpen}>
               <DialogTrigger asChild>
                 <Button>
                   <PlusCircle className="mr-2 h-4 w-4" /> Add Employee
@@ -53,7 +71,7 @@ const ManageData: React.FC = () => {
                 <DialogHeader>
                   <DialogTitle>Add New Employee</DialogTitle>
                 </DialogHeader>
-                <AddEmployeeForm onSuccess={() => setIsEmployeeDialogOpen(false)} />
+                <AddEmployeeForm onSuccess={() => setIsEmployeeAddDialogOpen(false)} />
               </DialogContent>
             </Dialog>
           </div>
@@ -63,8 +81,12 @@ const ManageData: React.FC = () => {
             ) : (
               data.employees.map((employee) => (
                 <Card key={employee.id}>
-                  <CardHeader>
-                    <CardTitle>{employee.name}</CardTitle>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-lg font-medium">{employee.name}</CardTitle>
+                    <Button variant="ghost" size="icon" onClick={() => handleEditEmployee(employee)}>
+                      <Edit className="h-4 w-4 text-gray-500" />
+                      <span className="sr-only">Edit employee</span>
+                    </Button>
                   </CardHeader>
                   <CardContent>
                     <p>ID: {employee.id}</p>
@@ -74,6 +96,16 @@ const ManageData: React.FC = () => {
               ))
             )}
           </div>
+          {selectedEmployee && (
+            <Dialog open={isEmployeeEditDialogOpen} onOpenChange={setIsEmployeeEditDialogOpen}>
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>Edit Employee</DialogTitle>
+                </DialogHeader>
+                <EditEmployeeForm initialData={selectedEmployee} onSuccess={() => setIsEmployeeEditDialogOpen(false)} />
+              </DialogContent>
+            </Dialog>
+          )}
         </TabsContent>
 
         <TabsContent value="dealers" className="mt-4">
@@ -221,7 +253,7 @@ const ManageData: React.FC = () => {
         <TabsContent value="products" className="mt-4">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-xl font-semibold">Products</h3>
-            <Dialog open={isProductDialogOpen} onOpenChange={setIsProductDialogOpen}>
+            <Dialog open={isProductAddDialogOpen} onOpenChange={setIsProductAddDialogOpen}>
               <DialogTrigger asChild>
                 <Button>
                   <PlusCircle className="mr-2 h-4 w-4" /> Add Product
@@ -231,7 +263,7 @@ const ManageData: React.FC = () => {
                 <DialogHeader>
                   <DialogTitle>Add New Product</DialogTitle>
                 </DialogHeader>
-                <AddProductForm onSuccess={() => setIsProductDialogOpen(false)} />
+                <AddProductForm onSuccess={() => setIsProductAddDialogOpen(false)} />
               </DialogContent>
             </Dialog>
           </div>
@@ -241,20 +273,35 @@ const ManageData: React.FC = () => {
             ) : (
               data.products.map((product) => (
                 <Card key={product.sku}>
-                  <CardHeader>
-                    <CardTitle>{product.name}</CardTitle>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-lg font-medium">{product.name}</CardTitle>
+                    <Button variant="ghost" size="icon" onClick={() => handleEditProduct(product)}>
+                      <Edit className="h-4 w-4 text-gray-500" />
+                      <span className="sr-only">Edit product</span>
+                    </Button>
                   </CardHeader>
                   <CardContent>
                     <p>SKU: {product.sku}</p>
                     <p>Size: {product.size}</p>
                     <p>Bulk: {product.isBulk ? "Yes" : "No"}</p>
                     <p>Quantity: {product.quantity}</p>
+                    <p>Cost: ${product.cost.toFixed(2)}</p>
                     {product.locationId && <p>Location: {product.locationId}</p>}
                   </CardContent>
                 </Card>
               ))
             )}
           </div>
+          {selectedProduct && (
+            <Dialog open={isProductEditDialogOpen} onOpenChange={setIsProductEditDialogOpen}>
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>Edit Product</DialogTitle>
+                </DialogHeader>
+                <EditProductForm initialData={selectedProduct} onSuccess={() => setIsProductEditDialogOpen(false)} />
+              </DialogContent>
+            </Dialog>
+          )}
         </TabsContent>
       </Tabs>
     </div>

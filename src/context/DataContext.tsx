@@ -47,6 +47,8 @@ interface DataContextType {
   addProductReceipt: (receipt: ProductReceipt) => void;
   addInventoryMovement: (movement: InventoryMovement) => void;
   addBulkBreaking: (breaking: BulkBreaking) => void;
+  updateEmployee: (oldId: string, updatedEmployee: Employee) => void; // New
+  updateProduct: (oldSku: string, updatedProduct: Product) => void; // New
   // ... more functions will be added as we build out features
 }
 
@@ -65,6 +67,42 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       ...prevState,
       employees: [...prevState.employees, employee],
     }));
+  };
+
+  const updateEmployee = (oldId: string, updatedEmployee: Employee) => {
+    setAppState(prevState => {
+      const newId = updatedEmployee.id;
+      let newState = { ...prevState };
+
+      // Update the employee in the main list
+      newState.employees = prevState.employees.map(emp =>
+        emp.id === oldId ? updatedEmployee : emp
+      );
+
+      // Update employeeId in all relevant transactions if ID changed
+      if (oldId !== newId) {
+        newState.saleTransactions = prevState.saleTransactions.map(t =>
+          t.employeeId === oldId ? { ...t, employeeId: newId } : t
+        );
+        newState.bulkDeliveries = prevState.bulkDeliveries.map(t =>
+          t.employeeId === oldId ? { ...t, employeeId: newId } : t
+        );
+        newState.bulkBreakings = prevState.bulkBreakings.map(t =>
+          t.employeeId === oldId ? { ...t, employeeId: newId } : t
+        );
+        newState.inventoryMovements = prevState.inventoryMovements.map(t =>
+          t.employeeId === oldId ? { ...t, employeeId: newId } : t
+        );
+        newState.productReceipts = prevState.productReceipts.map(t =>
+          t.employeeId === oldId ? { ...t, employeeId: newId } : t
+        );
+        newState.employeePayments = prevState.employeePayments.map(t =>
+          t.employeeId === oldId ? { ...t, employeeId: newId } : t
+        );
+      }
+
+      return newState;
+    });
   };
 
   const addDealer = (dealer: Dealer) => {
@@ -100,6 +138,46 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       ...prevState,
       products: [...prevState.products, product],
     }));
+  };
+
+  const updateProduct = (oldSku: string, updatedProduct: Product) => {
+    setAppState(prevState => {
+      const newSku = updatedProduct.sku;
+      let newState = { ...prevState };
+
+      // Update the product in the main list
+      newState.products = prevState.products.map(prod =>
+        prod.sku === oldSku ? updatedProduct : prod
+      );
+
+      // Update product references in all relevant transactions if SKU changed
+      if (oldSku !== newSku) {
+        newState.saleTransactions = prevState.saleTransactions.map(t => ({
+          ...t,
+          productsSold: t.productsSold.map(item =>
+            item.sku === oldSku ? { ...item, sku: newSku } : item
+          ),
+        }));
+        newState.bulkDeliveries = prevState.bulkDeliveries.map(t =>
+          t.productId === oldSku ? { ...t, productId: newSku } : t
+        );
+        newState.bulkBreakings = prevState.bulkBreakings.map(t => ({
+          ...t,
+          bulkProductId: t.bulkProductId === oldSku ? newSku : t.bulkProductId,
+          brokenIntoProducts: t.brokenIntoProducts.map(item =>
+            item.sku === oldSku ? { ...item, sku: newSku } : item
+          ),
+        }));
+        newState.inventoryMovements = prevState.inventoryMovements.map(t =>
+          t.productId === oldSku ? { ...t, productId: newSku } : t
+        );
+        newState.productReceipts = prevState.productReceipts.map(t =>
+          t.productId === oldSku ? { ...t, productId: newSku } : t
+        );
+      }
+
+      return newState;
+    });
   };
 
   const addSaleTransaction = (sale: SaleTransaction) => {
@@ -265,6 +343,8 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     addProductReceipt,
     addInventoryMovement,
     addBulkBreaking,
+    updateEmployee,
+    updateProduct,
   };
 
   return <DataContext.Provider value={contextValue}>{children}</DataContext.Provider>;
