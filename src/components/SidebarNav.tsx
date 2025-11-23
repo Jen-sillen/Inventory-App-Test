@@ -21,7 +21,6 @@ const mainNavLinks: NavLink[] = [
 const actionLinks: NavLink[] = [
   { to: '/actions/new-sale', label: 'Make a new Sale' },
   { to: '/actions/bulk-purchase', label: 'Make a Bulk Purchase' },
-  { to: '/actions/track-delivery', label: 'Track a Delivery' },
   { to: '/actions/move-inventory', label: 'Move Inventory' },
   { to: '/actions/break-bulk-product', label: 'Break Bulk Product' },
 ];

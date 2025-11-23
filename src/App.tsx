@@ -20,7 +20,7 @@ import ManageData from "./pages/ManageData";
 // Action Pages
 import NewSale from "./pages/actions/NewSale";
 import BulkPurchase from "./pages/actions/BulkPurchase";
-import TrackDelivery from "./pages/actions/TrackDelivery";
+// import TrackDelivery from "./pages/actions/TrackDelivery"; // Removed TrackDelivery import
 import MoveInventory from "./pages/actions/MoveInventory";
 import BreakBulkProduct from "./pages/actions/BreakBulkProduct";
 
@@ -46,7 +46,7 @@ const App = () => (
               {/* Action Routes */}
               <Route path="/actions/new-sale" element={<NewSale />} />
               <Route path="/actions/bulk-purchase" element={<BulkPurchase />} />
-              <Route path="/actions/track-delivery" element={<TrackDelivery />} />
+              {/* <Route path="/actions/track-delivery" element={<TrackDelivery />} /> */} {/* Removed TrackDelivery route */}
               <Route path="/actions/move-inventory" element={<MoveInventory />} />
               <Route path="/actions/break-bulk-product" element={<BreakBulkProduct />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
