@@ -2,7 +2,8 @@ import React from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { useData } from '@/context/DataContext';
 import MonthlySalesChart from '@/components/charts/MonthlySalesChart';
-import VendorBulkPurchaseChart from '@/components/charts/VendorBulkPurchaseChart'; // New import
+import VendorBulkPurchaseChart from '@/components/charts/VendorBulkPurchaseChart';
+import DealerSalesChart from '@/components/charts/DealerSalesChart'; // New import
 
 const OverallMetricsSales: React.FC = () => {
   const { data } = useData();
@@ -131,7 +132,8 @@ const OverallMetricsSales: React.FC = () => {
           <li>Price Fluctuations</li>
         </ul>
         <MonthlySalesChart />
-        <VendorBulkPurchaseChart /> {/* New chart added here */}
+        <VendorBulkPurchaseChart />
+        <DealerSalesChart /> {/* New chart added here */}
       </section>
     </div>
   );
