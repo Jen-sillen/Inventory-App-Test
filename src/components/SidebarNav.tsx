@@ -11,11 +11,10 @@ interface NavLink {
 }
 
 const mainNavLinks: NavLink[] = [
-  { to: '/overall-metrics-sales', label: 'Overall Metrics & Sales' }, // Corrected route, now effectively the landing page
+  { to: '/overall-metrics-sales', label: 'Overall Metrics & Sales' },
   { to: '/vendor-dealer-sales', label: 'Vendor/Dealer Sales History' },
   { to: '/transaction-log', label: 'Full Transaction Log' },
   { to: '/inventory-snapshot', label: 'Inventory Snapshot' },
-  { to: '/todays-transactions', label: 'Today’s Transactions' },
   { to: '/manage-data', label: 'Manage Data' },
 ];
 

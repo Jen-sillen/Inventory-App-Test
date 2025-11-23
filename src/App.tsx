@@ -14,7 +14,7 @@ import VendorDealerSalesHistory from "./pages/VendorDealerSalesHistory";
 import FullTransactionLog from "./pages/FullTransactionLog";
 import InventorySnapshot from "./pages/InventorySnapshot";
 // import IDsSKUsQRs from "./pages/IDsSKUsQRs"; // Removed IDsSKUsQRs import
-import TodaysTransactions from "./pages/TodaysTransactions";
+// import TodaysTransactions from "./pages/TodaysTransactions"; // Removed TodaysTransactions import
 import ManageData from "./pages/ManageData";
 
 // Action Pages
@@ -41,7 +41,7 @@ const App = () => (
               <Route path="/transaction-log" element={<FullTransactionLog />} />
               <Route path="/inventory-snapshot" element={<InventorySnapshot />} />
               {/* <Route path="/ids-skus-qrs" element={<IDsSKUsQRs />} /> */} {/* Removed IDsSKUsQRs route */}
-              <Route path="/todays-transactions" element={<TodaysTransactions />} />
+              {/* <Route path="/todays-transactions" element={<TodaysTransactions />} /> */} {/* Removed TodaysTransactions route */}
               <Route path="/manage-data" element={<ManageData />} />
               {/* Action Routes */}
               <Route path="/actions/new-sale" element={<NewSale />} />

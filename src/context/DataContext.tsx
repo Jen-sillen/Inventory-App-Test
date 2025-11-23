@@ -47,8 +47,10 @@ interface DataContextType {
   addProductReceipt: (receipt: ProductReceipt) => void;
   addInventoryMovement: (movement: InventoryMovement) => void;
   addBulkBreaking: (breaking: BulkBreaking) => void;
-  updateEmployee: (oldId: string, updatedEmployee: Employee) => void; // New
-  updateProduct: (oldSku: string, updatedProduct: Product) => void; // New
+  updateEmployee: (oldId: string, updatedEmployee: Employee) => void;
+  updateProduct: (oldSku: string, updatedProduct: Product) => void;
+  updateSaleTransaction: (oldId: string, updatedSale: SaleTransaction) => void; // New
+  updateBulkDelivery: (oldId: string, updatedDelivery: BulkDelivery) => void; // New
   // ... more functions will be added as we build out features
 }
 
@@ -201,6 +203,54 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
   };
 
+  const updateSaleTransaction = (oldId: string, updatedSale: SaleTransaction) => {
+    setAppState(prevState => {
+      const oldSale = prevState.saleTransactions.find(s => s.id === oldId);
+      if (!oldSale) {
+        throw new Error(`Sale transaction with ID ${oldId} not found.`);
+      }
+
+      let updatedProducts = [...prevState.products];
+
+      // 1. Reverse the impact of the old sale on product quantities
+      oldSale.productsSold.forEach(oldItem => {
+        const productIndex = updatedProducts.findIndex(p => p.sku === oldItem.sku);
+        if (productIndex !== -1) {
+          updatedProducts[productIndex] = {
+            ...updatedProducts[productIndex],
+            quantity: updatedProducts[productIndex].quantity + oldItem.quantity,
+          };
+        }
+      });
+
+      // 2. Apply the impact of the new sale on product quantities
+      updatedSale.productsSold.forEach(newItem => {
+        const productIndex = updatedProducts.findIndex(p => p.sku === newItem.sku);
+        if (productIndex === -1) {
+          throw new Error(`Product with SKU ${newItem.sku} not found for new sale.`);
+        }
+        if (updatedProducts[productIndex].quantity < newItem.quantity) {
+          throw new Error(`Not enough stock for product ${updatedProducts[productIndex].name} (${newItem.sku}). Available: ${updatedProducts[productIndex].quantity}, Requested: ${newItem.quantity}`);
+        }
+        updatedProducts[productIndex] = {
+          ...updatedProducts[productIndex],
+          quantity: updatedProducts[productIndex].quantity - newItem.quantity,
+        };
+      });
+
+      // 3. Update the sale transaction itself
+      const newSaleTransactions = prevState.saleTransactions.map(s =>
+        s.id === oldId ? updatedSale : s
+      );
+
+      return {
+        ...prevState,
+        saleTransactions: newSaleTransactions,
+        products: updatedProducts,
+      };
+    });
+  };
+
   const addBulkDelivery = (delivery: BulkDelivery) => {
     setAppState(prevState => {
       // Check if the product exists and is a bulk product
@@ -228,6 +278,79 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return {
         ...prevState,
         bulkDeliveries: [...prevState.bulkDeliveries, delivery],
+        products: updatedProducts,
+      };
+    });
+  };
+
+  const updateBulkDelivery = (oldId: string, updatedDelivery: BulkDelivery) => {
+    setAppState(prevState => {
+      const oldDelivery = prevState.bulkDeliveries.find(d => d.id === oldId);
+      if (!oldDelivery) {
+        throw new Error(`Bulk delivery with ID ${oldId} not found.`);
+      }
+
+      let updatedProducts = [...prevState.products];
+      const productIndex = updatedProducts.findIndex(p => p.sku === oldDelivery.productId);
+      if (productIndex === -1) {
+        throw new Error(`Product with SKU ${oldDelivery.productId} not found for old delivery.`);
+      }
+
+      // 1. Reverse the quantity impact of the old delivery
+      updatedProducts[productIndex] = {
+        ...updatedProducts[productIndex],
+        quantity: updatedProducts[productIndex].quantity - oldDelivery.quantity,
+      };
+
+      // 2. Apply the quantity impact of the new delivery
+      // Check if the product for the new delivery is valid
+      const newProductIndex = updatedProducts.findIndex(p => p.sku === updatedDelivery.productId);
+      if (newProductIndex === -1) {
+        throw new Error(`Product with SKU ${updatedDelivery.productId} not found for new delivery.`);
+      }
+      if (!updatedProducts[newProductIndex].isBulk) {
+        throw new Error(`Product ${updatedProducts[newProductIndex].name} (${updatedDelivery.productId}) is not a bulk product.`);
+      }
+
+      // If product SKU changed, adjust the old product's quantity back and apply to new product
+      if (oldDelivery.productId !== updatedDelivery.productId) {
+        // Add old quantity back to the original product (already done above for oldDelivery.productId)
+        // Now, find the *new* product and add the new quantity
+        updatedProducts[newProductIndex] = {
+          ...updatedProducts[newProductIndex],
+          quantity: updatedProducts[newProductIndex].quantity + updatedDelivery.quantity,
+        };
+        // Note: Cost recalculation for product changes is complex and omitted for simplicity here.
+        // The cost of the *new* product will not be re-averaged based on this edit.
+      } else {
+        // If product SKU is the same, just apply the new quantity
+        updatedProducts[productIndex] = {
+          ...updatedProducts[productIndex],
+          quantity: updatedProducts[productIndex].quantity + updatedDelivery.quantity,
+        };
+        // Recalculate weighted average cost if product is the same
+        const oldProduct = prevState.products[productIndex];
+        const oldTotalQuantityBeforeOldDelivery = oldProduct.quantity - oldDelivery.quantity;
+        const oldTotalCostBeforeOldDelivery = oldTotalQuantityBeforeOldDelivery * oldProduct.cost;
+
+        const newTotalQuantity = oldTotalQuantityBeforeOldDelivery + updatedDelivery.quantity;
+        const newTotalCost = oldTotalCostBeforeOldDelivery + updatedDelivery.totalAmount;
+        const newCost = newTotalQuantity > 0 ? newTotalCost / newTotalQuantity : 0;
+
+        updatedProducts[productIndex] = {
+          ...updatedProducts[productIndex],
+          cost: newCost,
+        };
+      }
+
+      // 3. Update the bulk delivery transaction itself
+      const newBulkDeliveries = prevState.bulkDeliveries.map(d =>
+        d.id === oldId ? updatedDelivery : d
+      );
+
+      return {
+        ...prevState,
+        bulkDeliveries: newBulkDeliveries,
         products: updatedProducts,
       };
     });
@@ -348,6 +471,8 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     addBulkBreaking,
     updateEmployee,
     updateProduct,
+    updateSaleTransaction,
+    updateBulkDelivery,
   };
 
   return <DataContext.Provider value={contextValue}>{children}</DataContext.Provider>;

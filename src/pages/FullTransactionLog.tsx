@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useData } from '@/context/DataContext';
 import {
   Table,
@@ -9,11 +9,21 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { format } from 'date-fns';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Edit } from 'lucide-react';
+import EditSaleForm from '@/components/forms/EditSaleForm';
+import EditBulkPurchaseForm from '@/components/forms/EditBulkPurchaseForm';
+import { SaleTransaction, BulkDelivery } from '@/types/inventory';
+
+// Define a union type for editable transactions
+type EditableTransaction = SaleTransaction | BulkDelivery;
 
 const FullTransactionLog: React.FC = () => {
   const { data } = useData();
-
-  console.log("FullTransactionLog - Data from context:", data); // Diagnostic log
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [selectedTransaction, setSelectedTransaction] = useState<EditableTransaction | null>(null);
+  const [selectedTransactionType, setSelectedTransactionType] = useState<'Sale' | 'Bulk Purchase' | null>(null);
 
   // Helper to get entity names
   const getEmployeeName = (id?: string) => id ? (data.employees.find(e => e.id === id)?.name || `Unknown Employee (${id})`) : 'N/A';
@@ -25,7 +35,8 @@ const FullTransactionLog: React.FC = () => {
   // Combine all transaction types into a single array
   const allTransactions = [
     ...data.saleTransactions.map(t => ({
-      type: 'Sale',
+      id: t.id,
+      type: 'Sale' as const,
       date: new Date(t.date),
       details: (
         <>
@@ -37,11 +48,13 @@ const FullTransactionLog: React.FC = () => {
           </ul>
         </>
       ),
+      originalTransaction: t,
     })),
     ...data.bulkDeliveries.map(t => {
-      const safeTotalAmount = typeof t.totalAmount === 'number' ? t.totalAmount : 0; // Safely access totalAmount
+      const safeTotalAmount = typeof t.totalAmount === 'number' ? t.totalAmount : 0;
       return {
-        type: 'Bulk Purchase',
+        id: t.id,
+        type: 'Bulk Purchase' as const,
         date: new Date(t.date),
         details: (
           <>
@@ -49,10 +62,12 @@ const FullTransactionLog: React.FC = () => {
             {t.employeeId && ` by ${getEmployeeName(t.employeeId)}`}
           </>
         ),
+        originalTransaction: t,
       };
     }),
     ...data.bulkBreakings.map(t => ({
-      type: 'Bulk Breaking',
+      id: t.id,
+      type: 'Bulk Breaking' as const,
       date: new Date(t.date),
       details: (
         <>
@@ -65,18 +80,22 @@ const FullTransactionLog: React.FC = () => {
           </ul>
         </>
       ),
+      originalTransaction: t,
     })),
     ...data.inventoryMovements.map(t => ({
-      type: 'Inventory Movement',
+      id: t.id,
+      type: 'Inventory Movement' as const,
       date: new Date(t.date),
       details: (
         <>
           Moved {t.quantity} units of {getProductName(t.productId)} from {getLocationName(t.fromLocationId)} to {getLocationName(t.toLocationId)} by {getEmployeeName(t.employeeId)}
         </>
       ),
+      originalTransaction: t,
     })),
     ...data.productReceipts.map(t => ({
-      type: 'Product Receipt',
+      id: t.id,
+      type: 'Product Receipt' as const,
       date: new Date(t.date),
       details: (
         <>
@@ -85,10 +104,21 @@ const FullTransactionLog: React.FC = () => {
           {t.employeeId && ` by ${getEmployeeName(t.employeeId)}`}
         </>
       ),
+      originalTransaction: t,
     })),
   ].sort((a, b) => b.date.getTime() - a.date.getTime()); // Sort by date, newest first
 
-  console.log("FullTransactionLog - All transactions:", allTransactions); // Diagnostic log
+  const handleEditClick = (transaction: EditableTransaction, type: 'Sale' | 'Bulk Purchase') => {
+    setSelectedTransaction(transaction);
+    setSelectedTransactionType(type);
+    setIsEditDialogOpen(true);
+  };
+
+  const handleEditSuccess = () => {
+    setIsEditDialogOpen(false);
+    setSelectedTransaction(null);
+    setSelectedTransactionType(null);
+  };
 
   return (
     <div className="space-y-6">
@@ -106,23 +136,35 @@ const FullTransactionLog: React.FC = () => {
                 <TableHead className="w-[150px]">Type</TableHead>
                 <TableHead className="w-[200px]">Date</TableHead>
                 <TableHead>Details</TableHead>
+                <TableHead className="w-[80px] text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {allTransactions.map((transaction, index) => {
                 try {
                   return (
-                    <TableRow key={index}>
+                    <TableRow key={transaction.id || index}>
                       <TableCell className="font-medium">{transaction.type}</TableCell>
                       <TableCell>{format(transaction.date, 'PPP p')}</TableCell>
                       <TableCell>{transaction.details}</TableCell>
+                      <TableCell className="text-right">
+                        {(transaction.type === 'Sale' || transaction.type === 'Bulk Purchase') && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleEditClick(transaction.originalTransaction as EditableTransaction, transaction.type)}
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </TableCell>
                     </TableRow>
                   );
                 } catch (error) {
                   console.error(`Error rendering transaction at index ${index}:`, transaction, error);
                   return (
-                    <TableRow key={index} className="bg-red-100 dark:bg-red-900">
-                      <TableCell colSpan={3} className="text-red-700 dark:text-red-300">
+                    <TableRow key={transaction.id || index} className="bg-red-100 dark:bg-red-900">
+                      <TableCell colSpan={4} className="text-red-700 dark:text-red-300">
                         Error displaying transaction (Type: {transaction.type}). Check console for details.
                       </TableCell>
                     </TableRow>
@@ -133,6 +175,26 @@ const FullTransactionLog: React.FC = () => {
           </Table>
         )}
       </div>
+
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>Edit {selectedTransactionType} Transaction</DialogTitle>
+          </DialogHeader>
+          {selectedTransactionType === 'Sale' && selectedTransaction && (
+            <EditSaleForm
+              initialData={selectedTransaction as SaleTransaction}
+              onSuccess={handleEditSuccess}
+            />
+          )}
+          {selectedTransactionType === 'Bulk Purchase' && selectedTransaction && (
+            <EditBulkPurchaseForm
+              initialData={selectedTransaction as BulkDelivery}
+              onSuccess={handleEditSuccess}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
