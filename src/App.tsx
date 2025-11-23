@@ -15,6 +15,7 @@ import FullTransactionLog from "./pages/FullTransactionLog";
 import InventorySnapshot from "./pages/InventorySnapshot";
 import IDsSKUsQRs from "./pages/IDsSKUsQRs";
 import TodaysTransactions from "./pages/TodaysTransactions";
+import ManageData from "./pages/ManageData"; // New import
 
 // Action Pages
 import NewSale from "./pages/actions/NewSale";
@@ -41,6 +42,7 @@ const App = () => (
               <Route path="/inventory-snapshot" element={<InventorySnapshot />} />
               <Route path="/ids-skus-qrs" element={<IDsSKUsQRs />} />
               <Route path="/todays-transactions" element={<TodaysTransactions />} />
+              <Route path="/manage-data" element={<ManageData />} /> {/* New route */}
               {/* Action Routes */}
               <Route path="/actions/new-sale" element={<NewSale />} />
               <Route path="/actions/bulk-purchase" element={<BulkPurchase />} />

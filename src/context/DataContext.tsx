@@ -34,9 +34,12 @@ const initialAppState: AppState = {
 interface DataContextType {
   data: AppState;
   setAppState: React.Dispatch<React.SetStateAction<AppState>>;
-  // Add specific functions for CRUD operations here as needed
   addEmployee: (employee: Employee) => void;
+  addDealer: (dealer: Dealer) => void;
   addVendor: (vendor: Vendor) => void;
+  addShelfLocation: (location: ShelfLocation) => void;
+  addDevice: (device: Device) => void;
+  addProduct: (product: Product) => void;
   // ... more functions will be added as we build out features
 }
 
@@ -52,6 +55,13 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }));
   };
 
+  const addDealer = (dealer: Dealer) => {
+    setAppState(prevState => ({
+      ...prevState,
+      dealers: [...prevState.dealers, dealer],
+    }));
+  };
+
   const addVendor = (vendor: Vendor) => {
     setAppState(prevState => ({
       ...prevState,
@@ -59,13 +69,36 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }));
   };
 
-  // Add more specific CRUD functions here for other entities
+  const addShelfLocation = (location: ShelfLocation) => {
+    setAppState(prevState => ({
+      ...prevState,
+      shelfLocations: [...prevState.shelfLocations, location],
+    }));
+  };
+
+  const addDevice = (device: Device) => {
+    setAppState(prevState => ({
+      ...prevState,
+      devices: [...prevState.devices, device],
+    }));
+  };
+
+  const addProduct = (product: Product) => {
+    setAppState(prevState => ({
+      ...prevState,
+      products: [...prevState.products, product],
+    }));
+  };
 
   const contextValue: DataContextType = {
     data: appState,
     setAppState,
     addEmployee,
+    addDealer,
     addVendor,
+    addShelfLocation,
+    addDevice,
+    addProduct,
   };
 
   return <DataContext.Provider value={contextValue}>{children}</DataContext.Provider>;

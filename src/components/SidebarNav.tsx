@@ -17,6 +17,7 @@ const mainNavLinks: NavLink[] = [
   { to: '/inventory-snapshot', label: 'Inventory Snapshot' },
   { to: '/ids-skus-qrs', label: 'Full list of IDs/SKUs/QRs' },
   { to: '/todays-transactions', label: 'Today’s Transactions' },
+  { to: '/manage-data', label: 'Manage Data' }, // New link
 ];
 
 const actionLinks: NavLink[] = [
