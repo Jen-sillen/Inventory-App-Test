@@ -37,7 +37,8 @@ const TodaysTransactions: React.FC = () => {
     ...data.productReceipts.map(t => ({
       type: 'Product Receipt',
       date: t.date,
-      details: `Received ${t.quantity} units of ${getProductName(t.productId)} at ${getLocationName(t.toLocationId)}${t.vendorId ? ` from ${getVendorName(t.vendorId)}` : ''}${t.employeeId ? ` by ${getEmployeeName(t.employeeId)}` : ''}`,
+      // Simplified details for debugging
+      details: `Product Receipt for ${getProductName(t.productId)} (Qty: ${t.quantity})`,
     })),
   ].filter(transaction => {
     try {
@@ -46,7 +47,9 @@ const TodaysTransactions: React.FC = () => {
         console.error("Invalid date string for transaction:", transaction.date, "Type:", transaction.type);
         return false;
       }
-      return isToday(transactionDate);
+      const isTransactionToday = isToday(transactionDate);
+      // console.log(`Transaction: ${transaction.type}, Date: ${transaction.date}, Is Today: ${isTransactionToday}`); // More detailed log
+      return isTransactionToday;
     } catch (e) {
       console.error("Error processing transaction date:", transaction.date, "Type:", transaction.type, e);
       return false;
