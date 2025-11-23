@@ -79,6 +79,16 @@ export interface EmployeePayment {
   description: string;
 }
 
+export interface ProductReceipt {
+  id: string;
+  vendorId?: string; // Optional, as some deliveries might not be directly from a vendor
+  productId: string; // SKU of the product received (can be bulk or non-bulk)
+  quantity: number;
+  date: string;
+  employeeId?: string;
+  toLocationId: string; // Where the product is received
+}
+
 // Central application state for localStorage
 export interface AppState {
   employees: Employee[];
@@ -92,4 +102,5 @@ export interface AppState {
   inventoryMovements: InventoryMovement[];
   saleTransactions: SaleTransaction[];
   employeePayments: EmployeePayment[];
+  productReceipts: ProductReceipt[]; // New array for general product deliveries
 }

@@ -13,6 +13,7 @@ import {
   InventoryMovement,
   SaleTransaction,
   EmployeePayment,
+  ProductReceipt, // New import
 } from '@/types/inventory';
 
 const LOCAL_STORAGE_KEY = 'inventory-app-data';
@@ -29,6 +30,7 @@ const initialAppState: AppState = {
   inventoryMovements: [],
   saleTransactions: [],
   employeePayments: [],
+  productReceipts: [], // Initialize new array
 };
 
 interface DataContextType {
@@ -41,7 +43,8 @@ interface DataContextType {
   addDevice: (device: Device) => void;
   addProduct: (product: Product) => void;
   addSaleTransaction: (sale: SaleTransaction) => void;
-  addBulkDelivery: (delivery: BulkDelivery) => void; // New function
+  addBulkDelivery: (delivery: BulkDelivery) => void;
+  addProductReceipt: (receipt: ProductReceipt) => void; // New function
   // ... more functions will be added as we build out features
 }
 
@@ -142,6 +145,35 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
   };
 
+  const addProductReceipt = (receipt: ProductReceipt) => {
+    setAppState(prevState => {
+      const updatedProducts = prevState.products.map(product => {
+        if (product.sku === receipt.productId) {
+          // Increase quantity
+          const newQuantity = product.quantity + receipt.quantity;
+          // If product had no location and a new one is provided, set it. Otherwise, keep existing.
+          const newLocationId = product.locationId === undefined && receipt.toLocationId
+            ? receipt.toLocationId
+            : product.locationId;
+          return { ...product, quantity: newQuantity, locationId: newLocationId };
+        }
+        return product;
+      });
+
+      // Check if the product exists
+      const targetProduct = prevState.products.find(p => p.sku === receipt.productId);
+      if (!targetProduct) {
+        throw new Error(`Product with SKU ${receipt.productId} not found.`);
+      }
+
+      return {
+        ...prevState,
+        productReceipts: [...prevState.productReceipts, receipt],
+        products: updatedProducts,
+      };
+    });
+  };
+
   const contextValue: DataContextType = {
     data: appState,
     setAppState,
@@ -153,6 +185,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     addProduct,
     addSaleTransaction,
     addBulkDelivery,
+    addProductReceipt,
   };
 
   return <DataContext.Provider value={contextValue}>{children}</DataContext.Provider>;

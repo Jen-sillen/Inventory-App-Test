@@ -1,4 +1,5 @@
 import React from 'react';
+import AddProductReceiptForm from '@/components/forms/AddProductReceiptForm'; // New import
 
 const TrackDelivery: React.FC = () => {
   return (
@@ -8,9 +9,7 @@ const TrackDelivery: React.FC = () => {
         This page will allow employees to track incoming deliveries from vendors.
       </p>
       <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-        <p className="text-gray-700 dark:text-gray-300">
-          Form for recording delivery details, linking to a bulk purchase or new stock.
-        </p>
+        <AddProductReceiptForm />
       </div>
     </div>
   );
