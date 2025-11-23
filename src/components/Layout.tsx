@@ -9,6 +9,7 @@ interface LayoutProps {
 }
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
+  console.log("Layout component is rendering!"); // Diagnostic log
   return (
     <div className="flex min-h-screen bg-background text-foreground">
       {/* SidebarNav now handles its own mobile/desktop rendering */}
