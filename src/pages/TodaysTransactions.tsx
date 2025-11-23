@@ -91,6 +91,10 @@ const TodaysTransactions: React.FC = () => {
         This page displays all transactions that have occurred today.
       </p>
       <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow overflow-x-auto">
+        {/* Temporarily simplified content */}
+        <p>This is a test message for Today's Transactions page.</p>
+        {/* Original table content commented out */}
+        {/*
         {allTransactions.length === 0 ? (
           <p className="text-muted-foreground text-center">No transactions recorded today yet.</p>
         ) : (
@@ -113,6 +117,7 @@ const TodaysTransactions: React.FC = () => {
             </TableBody>
           </Table>
         )}
+        */}
       </div>
     </div>
   );
