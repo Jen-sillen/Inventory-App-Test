@@ -9,7 +9,7 @@ import {
   Device,
   Product,
   BulkDelivery,
-  BulkBreaking, // New import
+  BulkBreaking,
   InventoryMovement,
   SaleTransaction,
   EmployeePayment,
@@ -26,7 +26,7 @@ const initialAppState: AppState = {
   devices: [],
   products: [],
   bulkDeliveries: [],
-  bulkBreakings: [], // Initialize new array
+  bulkBreakings: [],
   inventoryMovements: [],
   saleTransactions: [],
   employeePayments: [],
@@ -46,7 +46,7 @@ interface DataContextType {
   addBulkDelivery: (delivery: BulkDelivery) => void;
   addProductReceipt: (receipt: ProductReceipt) => void;
   addInventoryMovement: (movement: InventoryMovement) => void;
-  addBulkBreaking: (breaking: BulkBreaking) => void; // New function
+  addBulkBreaking: (breaking: BulkBreaking) => void;
   // ... more functions will be added as we build out features
 }
 
@@ -54,6 +54,11 @@ const DataContext = createContext<DataContextType | undefined>(undefined);
 
 export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [appState, setAppState] = useLocalStorage<AppState>(LOCAL_STORAGE_KEY, initialAppState);
+
+  // Add a console log here to inspect appState
+  React.useEffect(() => {
+    console.log("DataContext initialized with appState:", appState);
+  }, [appState]);
 
   const addEmployee = (employee: Employee) => {
     setAppState(prevState => ({
