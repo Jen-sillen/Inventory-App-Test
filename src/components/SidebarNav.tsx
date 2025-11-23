@@ -11,8 +11,7 @@ interface NavLink {
 }
 
 const mainNavLinks: NavLink[] = [
-  { to: '/', label: 'Home' }, // Added Home link
-  { to: '/overall-metrics-sales', label: 'Overall Metrics & Sales' }, // Corrected route
+  { to: '/overall-metrics-sales', label: 'Overall Metrics & Sales' }, // Corrected route, now effectively the landing page
   { to: '/vendor-dealer-sales', label: 'Vendor/Dealer Sales History' },
   { to: '/transaction-log', label: 'Full Transaction Log' },
   { to: '/inventory-snapshot', label: 'Inventory Snapshot' },
@@ -59,7 +58,7 @@ const SidebarNav: React.FC = () => {
           </Button>
         </SheetTrigger>
         <SheetContent side="left" className="w-64 p-4 bg-white dark:bg-gray-800">
-          <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-gray-100">Inventory App</h2>
+          <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-gray-100">Jen's Inventory</h2>
           {renderNavLinks(mainNavLinks)}
           {renderNavLinks(actionLinks, 'Actions')}
         </SheetContent>
@@ -69,7 +68,7 @@ const SidebarNav: React.FC = () => {
 
   return (
     <div className="hidden md:block w-64 bg-gray-100 dark:bg-gray-900 p-4 border-r border-gray-200 dark:border-gray-700 h-full overflow-y-auto">
-      <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-gray-100">Inventory App</h2>
+      <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-gray-100">Jen's Inventory</h2>
       {renderNavLinks(mainNavLinks)}
       {renderNavLinks(actionLinks, 'Actions')}
     </div>

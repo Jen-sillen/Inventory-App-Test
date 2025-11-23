@@ -7,7 +7,7 @@ import { DataProvider } from "./context/DataContext";
 import Layout from "./components/Layout";
 
 // Pages
-import Index from "./pages/Index";
+// import Index from "./pages/Index"; // Removed Index page import
 import NotFound from "./pages/NotFound";
 import OverallMetricsSales from "./pages/OverallMetricsSales";
 import VendorDealerSalesHistory from "./pages/VendorDealerSalesHistory";
@@ -15,7 +15,7 @@ import FullTransactionLog from "./pages/FullTransactionLog";
 import InventorySnapshot from "./pages/InventorySnapshot";
 import IDsSKUsQRs from "./pages/IDsSKUsQRs";
 import TodaysTransactions from "./pages/TodaysTransactions";
-import ManageData from "./pages/ManageData"; // New import
+import ManageData from "./pages/ManageData";
 
 // Action Pages
 import NewSale from "./pages/actions/NewSale";
@@ -35,14 +35,14 @@ const App = () => (
         <DataProvider>
           <Layout>
             <Routes>
-              <Route path="/" element={<Index />} />
+              <Route path="/" element={<OverallMetricsSales />} /> {/* OverallMetricsSales is now the landing page */}
               <Route path="/overall-metrics-sales" element={<OverallMetricsSales />} />
               <Route path="/vendor-dealer-sales" element={<VendorDealerSalesHistory />} />
               <Route path="/transaction-log" element={<FullTransactionLog />} />
               <Route path="/inventory-snapshot" element={<InventorySnapshot />} />
               <Route path="/ids-skus-qrs" element={<IDsSKUsQRs />} />
               <Route path="/todays-transactions" element={<TodaysTransactions />} />
-              <Route path="/manage-data" element={<ManageData />} /> {/* New route */}
+              <Route path="/manage-data" element={<ManageData />} />
               {/* Action Routes */}
               <Route path="/actions/new-sale" element={<NewSale />} />
               <Route path="/actions/bulk-purchase" element={<BulkPurchase />} />
