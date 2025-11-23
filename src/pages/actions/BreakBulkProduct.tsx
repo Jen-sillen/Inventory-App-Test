@@ -1,4 +1,5 @@
 import React from 'react';
+import BreakBulkProductForm from '@/components/forms/BreakBulkProductForm'; // New import
 
 const BreakBulkProduct: React.FC = () => {
   return (
@@ -8,9 +9,7 @@ const BreakBulkProduct: React.FC = () => {
         This page will allow employees to record the breaking down of bulk products into sellable item packages.
       </p>
       <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-        <p className="text-gray-700 dark:text-gray-300">
-          Form for selecting bulk product, specifying resulting sellable packages and quantities.
-        </p>
+        <BreakBulkProductForm />
       </div>
     </div>
   );

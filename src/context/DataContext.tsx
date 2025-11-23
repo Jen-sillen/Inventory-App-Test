@@ -9,8 +9,8 @@ import {
   Device,
   Product,
   BulkDelivery,
-  BulkBreaking,
-  InventoryMovement, // New import
+  BulkBreaking, // New import
+  InventoryMovement,
   SaleTransaction,
   EmployeePayment,
   ProductReceipt,
@@ -26,8 +26,8 @@ const initialAppState: AppState = {
   devices: [],
   products: [],
   bulkDeliveries: [],
-  bulkBreakings: [],
-  inventoryMovements: [], // Initialize new array
+  bulkBreakings: [], // Initialize new array
+  inventoryMovements: [],
   saleTransactions: [],
   employeePayments: [],
   productReceipts: [],
@@ -45,7 +45,8 @@ interface DataContextType {
   addSaleTransaction: (sale: SaleTransaction) => void;
   addBulkDelivery: (delivery: BulkDelivery) => void;
   addProductReceipt: (receipt: ProductReceipt) => void;
-  addInventoryMovement: (movement: InventoryMovement) => void; // New function
+  addInventoryMovement: (movement: InventoryMovement) => void;
+  addBulkBreaking: (breaking: BulkBreaking) => void; // New function
   // ... more functions will be added as we build out features
 }
 
@@ -202,6 +203,49 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
   };
 
+  const addBulkBreaking = (breaking: BulkBreaking) => {
+    setAppState(prevState => {
+      let updatedProducts = [...prevState.products];
+
+      // 1. Decrease quantity of the bulk product
+      const bulkProductIndex = updatedProducts.findIndex(p => p.sku === breaking.bulkProductId);
+      if (bulkProductIndex === -1) {
+        throw new Error(`Bulk product with SKU ${breaking.bulkProductId} not found.`);
+      }
+      if (!updatedProducts[bulkProductIndex].isBulk) {
+        throw new Error(`Product ${updatedProducts[bulkProductIndex].name} (${breaking.bulkProductId}) is not a bulk product.`);
+      }
+      if (updatedProducts[bulkProductIndex].quantity < breaking.quantityToBreak) {
+        throw new Error(`Not enough bulk product ${updatedProducts[bulkProductIndex].name} (${breaking.bulkProductId}) to break. Available: ${updatedProducts[bulkProductIndex].quantity}, Requested: ${breaking.quantityToBreak}`);
+      }
+      updatedProducts[bulkProductIndex] = {
+        ...updatedProducts[bulkProductIndex],
+        quantity: updatedProducts[bulkProductIndex].quantity - breaking.quantityToBreak,
+      };
+
+      // 2. Increase quantities of the resulting sellable products
+      breaking.brokenIntoProducts.forEach(item => {
+        const sellableProductIndex = updatedProducts.findIndex(p => p.sku === item.sku);
+        if (sellableProductIndex === -1) {
+          throw new Error(`Resulting product with SKU ${item.sku} not found.`);
+        }
+        if (updatedProducts[sellableProductIndex].isBulk) {
+          throw new Error(`Resulting product ${updatedProducts[sellableProductIndex].name} (${item.sku}) cannot be a bulk product.`);
+        }
+        updatedProducts[sellableProductIndex] = {
+          ...updatedProducts[sellableProductIndex],
+          quantity: updatedProducts[sellableProductIndex].quantity + item.quantity,
+        };
+      });
+
+      return {
+        ...prevState,
+        bulkBreakings: [...prevState.bulkBreakings, breaking],
+        products: updatedProducts,
+      };
+    });
+  };
+
   const contextValue: DataContextType = {
     data: appState,
     setAppState,
@@ -215,6 +259,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     addBulkDelivery,
     addProductReceipt,
     addInventoryMovement,
+    addBulkBreaking,
   };
 
   return <DataContext.Provider value={contextValue}>{children}</DataContext.Provider>;
