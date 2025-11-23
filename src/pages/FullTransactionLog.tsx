@@ -38,16 +38,19 @@ const FullTransactionLog: React.FC = () => {
         </>
       ),
     })),
-    ...data.bulkDeliveries.map(t => ({
-      type: 'Bulk Purchase',
-      date: new Date(t.date),
-      details: (
-        <>
-          Purchased {t.quantity} units of {getProductName(t.productId)} from {getVendorName(t.vendorId)} for ${t.totalAmount.toFixed(2)}
-          {t.employeeId && ` by ${getEmployeeName(t.employeeId)}`}
-        </>
-      ),
-    })),
+    ...data.bulkDeliveries.map(t => {
+      const safeTotalAmount = typeof t.totalAmount === 'number' ? t.totalAmount : 0; // Safely access totalAmount
+      return {
+        type: 'Bulk Purchase',
+        date: new Date(t.date),
+        details: (
+          <>
+            Purchased {t.quantity} units of {getProductName(t.productId)} from {getVendorName(t.vendorId)} for ${safeTotalAmount.toFixed(2)}
+            {t.employeeId && ` by ${getEmployeeName(t.employeeId)}`}
+          </>
+        ),
+      };
+    }),
     ...data.bulkBreakings.map(t => ({
       type: 'Bulk Breaking',
       date: new Date(t.date),
@@ -106,13 +109,26 @@ const FullTransactionLog: React.FC = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {allTransactions.map((transaction, index) => (
-                <TableRow key={index}>
-                  <TableCell className="font-medium">{transaction.type}</TableCell>
-                  <TableCell>{format(transaction.date, 'PPP p')}</TableCell>
-                  <TableCell>{transaction.details}</TableCell>
-                </TableRow>
-              ))}
+              {allTransactions.map((transaction, index) => {
+                try {
+                  return (
+                    <TableRow key={index}>
+                      <TableCell className="font-medium">{transaction.type}</TableCell>
+                      <TableCell>{format(transaction.date, 'PPP p')}</TableCell>
+                      <TableCell>{transaction.details}</TableCell>
+                    </TableRow>
+                  );
+                } catch (error) {
+                  console.error(`Error rendering transaction at index ${index}:`, transaction, error);
+                  return (
+                    <TableRow key={index} className="bg-red-100 dark:bg-red-900">
+                      <TableCell colSpan={3} className="text-red-700 dark:text-red-300">
+                        Error displaying transaction (Type: {transaction.type}). Check console for details.
+                      </TableCell>
+                    </TableRow>
+                  );
+                }
+              })}
             </TableBody>
           </Table>
         )}
