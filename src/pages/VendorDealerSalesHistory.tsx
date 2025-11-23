@@ -29,18 +29,22 @@ const VendorDealerSalesHistory: React.FC = () => {
       totalAmount: transaction.totalAmount,
       employeeId: transaction.employeeId,
     })),
-    ...data.bulkDeliveries.map(delivery => ({
-      type: 'Purchase',
-      date: new Date(delivery.date),
-      partnerId: delivery.vendorId,
-      products: [{
-        sku: delivery.productId,
-        quantity: delivery.quantity,
-        price: delivery.totalAmount / delivery.quantity, // Calculate unit price for display
-      }],
-      totalAmount: delivery.totalAmount, // Now includes totalAmount
-      employeeId: delivery.employeeId,
-    })),
+    ...data.bulkDeliveries.map(delivery => {
+      const safeTotalAmount = typeof delivery.totalAmount === 'number' ? delivery.totalAmount : 0;
+      const unitPrice = delivery.quantity > 0 ? safeTotalAmount / delivery.quantity : 0;
+      return {
+        type: 'Purchase',
+        date: new Date(delivery.date),
+        partnerId: delivery.vendorId,
+        products: [{
+          sku: delivery.productId,
+          quantity: delivery.quantity,
+          price: unitPrice,
+        }],
+        totalAmount: safeTotalAmount,
+        employeeId: delivery.employeeId,
+      };
+    }),
   ].sort((a, b) => b.date.getTime() - a.date.getTime()); // Sort by date, newest first
 
   console.log("VendorDealerSalesHistory - Combined history:", combinedHistory); // Diagnostic log
@@ -96,7 +100,7 @@ const VendorDealerSalesHistory: React.FC = () => {
                     ))}
                   </TableCell>
                   <TableCell className="text-right">
-                    {`$${entry.totalAmount.toFixed(2)}`}
+                    {typeof entry.totalAmount === 'number' ? `$${entry.totalAmount.toFixed(2)}` : 'N/A'}
                   </TableCell>
                 </TableRow>
               ))}
