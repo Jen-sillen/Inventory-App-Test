@@ -12,15 +12,16 @@ import AddDealerForm from '@/components/forms/AddDealerForm';
 import AddShelfLocationForm from '@/components/forms/AddShelfLocationForm';
 import AddDeviceForm from '@/components/forms/AddDeviceForm';
 import AddProductForm from '@/components/forms/AddProductForm';
-import EditEmployeeForm from '@/components/forms/EditEmployeeForm'; // New import
-import EditProductForm from '@/components/forms/EditProductForm'; // New import
+import EditEmployeeForm from '@/components/forms/EditEmployeeForm';
+import EditProductForm from '@/components/forms/EditProductForm';
 import { PlusCircle, Edit } from 'lucide-react';
+import { Employee, Product } from '@/types/inventory'; // Import types for better state management
 
 const ManageData: React.FC = () => {
   const { data } = useData();
   const [isEmployeeAddDialogOpen, setIsEmployeeAddDialogOpen] = useState(false);
-  const [isEmployeeEditDialogOpen, setIsEmployeeEditDialogOpen] = useState(false); // New state
-  const [selectedEmployee, setSelectedEmployee] = useState<any>(null); // New state
+  const [isEmployeeEditDialogOpen, setIsEmployeeEditDialogOpen] = useState(false);
+  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null); // Type correctly
 
   const [isVendorDialogOpen, setIsVendorDialogOpen] = useState(false);
   const [isDealerDialogOpen, setIsDealerDialogOpen] = useState(false);
@@ -28,15 +29,15 @@ const ManageData: React.FC = () => {
   const [isDeviceDialogOpen, setIsDeviceDialogOpen] = useState(false);
   
   const [isProductAddDialogOpen, setIsProductAddDialogOpen] = useState(false);
-  const [isProductEditDialogOpen, setIsProductEditDialogOpen] = useState(false); // New state
-  const [selectedProduct, setSelectedProduct] = useState<any>(null); // New state
+  const [isProductEditDialogOpen, setIsProductEditDialogOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null); // Type correctly
 
-  const handleEditEmployee = (employee: any) => {
+  const handleEditEmployee = (employee: Employee) => {
     setSelectedEmployee(employee);
     setIsEmployeeEditDialogOpen(true);
   };
 
-  const handleEditProduct = (product: any) => {
+  const handleEditProduct = (product: Product) => {
     setSelectedProduct(product);
     setIsProductEditDialogOpen(true);
   };
@@ -96,16 +97,17 @@ const ManageData: React.FC = () => {
               ))
             )}
           </div>
-          {selectedEmployee && (
-            <Dialog open={isEmployeeEditDialogOpen} onOpenChange={setIsEmployeeEditDialogOpen}>
+          {/* Refactored Dialog for editing employee */}
+          <Dialog open={isEmployeeEditDialogOpen} onOpenChange={setIsEmployeeEditDialogOpen}>
+            {selectedEmployee && (
               <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
                   <DialogTitle>Edit Employee</DialogTitle>
                 </DialogHeader>
                 <EditEmployeeForm initialData={selectedEmployee} onSuccess={() => setIsEmployeeEditDialogOpen(false)} />
               </DialogContent>
-            </Dialog>
-          )}
+            )}
+          </Dialog>
         </TabsContent>
 
         <TabsContent value="dealers" className="mt-4">
@@ -292,16 +294,17 @@ const ManageData: React.FC = () => {
               ))
             )}
           </div>
-          {selectedProduct && (
-            <Dialog open={isProductEditDialogOpen} onOpenChange={setIsProductEditDialogOpen}>
+          {/* Refactored Dialog for editing product */}
+          <Dialog open={isProductEditDialogOpen} onOpenChange={setIsProductEditDialogOpen}>
+            {selectedProduct && (
               <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
                   <DialogTitle>Edit Product</DialogTitle>
                 </DialogHeader>
                 <EditProductForm initialData={selectedProduct} onSuccess={() => setIsProductEditDialogOpen(false)} />
               </DialogContent>
-            </Dialog>
-          )}
+            )}
+          </Dialog>
         </TabsContent>
       </Tabs>
     </div>
