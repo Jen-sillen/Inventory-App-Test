@@ -328,7 +328,7 @@ const ManageData: React.FC = () => {
                         <p>SKU: {product.sku}</p>
                         <p>Size: {product.size}</p>
                         <p>Quantity: {product.quantity}</p>
-                        <p>Cost: ${product.cost.toFixed(2)}</p>
+                        <p>Cost: ${(product.cost ?? 0).toFixed(2)}</p> {/* Fixed here */}
                         <p>Location: {data.shelfLocations.find(loc => loc.id === product.locationId)?.name || 'N/A'}</p>
                         <Button
                           variant="outline"
