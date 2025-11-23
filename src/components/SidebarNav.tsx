@@ -15,7 +15,6 @@ const mainNavLinks: NavLink[] = [
   { to: '/vendor-dealer-sales', label: 'Vendor/Dealer Sales History' },
   { to: '/transaction-log', label: 'Full Transaction Log' },
   { to: '/inventory-snapshot', label: 'Inventory Snapshot' },
-  { to: '/ids-skus-qrs', label: 'Full list of IDs/SKUs/QRs' },
   { to: '/todays-transactions', label: 'Today’s Transactions' },
   { to: '/manage-data', label: 'Manage Data' },
 ];
