@@ -8,12 +8,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useData } from '@/context/DataContext';
 import AddEmployeeForm from '@/components/forms/AddEmployeeForm';
 import AddVendorForm from '@/components/forms/AddVendorForm';
+import AddDealerForm from '@/components/forms/AddDealerForm'; // New import
 import { PlusCircle } from 'lucide-react';
 
 const ManageData: React.FC = () => {
   const { data } = useData();
   const [isEmployeeDialogOpen, setIsEmployeeDialogOpen] = useState(false);
   const [isVendorDialogOpen, setIsVendorDialogOpen] = useState(false);
+  const [isDealerDialogOpen, setIsDealerDialogOpen] = useState(false); // New state
   // Add state for other dialogs as needed
 
   return (
@@ -72,11 +74,37 @@ const ManageData: React.FC = () => {
         <TabsContent value="dealers" className="mt-4">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-xl font-semibold">Dealers</h3>
-            <Button>
-              <PlusCircle className="mr-2 h-4 w-4" /> Add Dealer
-            </Button>
+            <Dialog open={isDealerDialogOpen} onOpenChange={setIsDealerDialogOpen}>
+              <DialogTrigger asChild>
+                <Button>
+                  <PlusCircle className="mr-2 h-4 w-4" /> Add Dealer
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>Add New Dealer</DialogTitle>
+                </DialogHeader>
+                <AddDealerForm onSuccess={() => setIsDealerDialogOpen(false)} />
+              </DialogContent>
+            </Dialog>
           </div>
-          <p className="text-muted-foreground">No dealers added yet.</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {data.dealers.length === 0 ? (
+              <p className="text-muted-foreground col-span-full">No dealers added yet.</p>
+            ) : (
+              data.dealers.map((dealer) => (
+                <Card key={dealer.id}>
+                  <CardHeader>
+                    <CardTitle>{dealer.name}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p>ID: {dealer.id}</p>
+                    {/* Passcode should not be displayed */}
+                  </CardContent>
+                </Card>
+              ))
+            )}
+          </div>
         </TabsContent>
 
         <TabsContent value="vendors" className="mt-4">
