@@ -4,7 +4,8 @@ import { useData } from '@/context/DataContext';
 import MonthlySalesChart from '@/components/charts/MonthlySalesChart';
 import VendorBulkPurchaseChart from '@/components/charts/VendorBulkPurchaseChart';
 import DealerSalesChart from '@/components/charts/DealerSalesChart';
-import EmployeeActivityChart from '@/components/charts/EmployeeActivityChart'; // New import
+import EmployeeActivityChart from '@/components/charts/EmployeeActivityChart';
+import ProductSalesBySizeChart from '@/components/charts/ProductSalesBySizeChart'; // New import
 
 const OverallMetricsSales: React.FC = () => {
   const { data } = useData();
@@ -135,7 +136,8 @@ const OverallMetricsSales: React.FC = () => {
         <MonthlySalesChart />
         <VendorBulkPurchaseChart />
         <DealerSalesChart />
-        <EmployeeActivityChart /> {/* New chart added here */}
+        <EmployeeActivityChart />
+        <ProductSalesBySizeChart /> {/* New chart added here */}
       </section>
     </div>
   );
