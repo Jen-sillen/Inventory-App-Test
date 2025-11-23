@@ -42,6 +42,8 @@ const ManageData: React.FC = () => {
     setIsProductEditDialogOpen(true);
   };
 
+  console.log("ManageData JSX is attempting to render!"); // Diagnostic log
+
   return (
     <div className="space-y-6">
       <h2 className="text-3xl font-bold">Manage Data</h2>
