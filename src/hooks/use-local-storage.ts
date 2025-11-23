@@ -7,7 +7,8 @@ function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T | ((val
     }
     try {
       const item = window.localStorage.getItem(key);
-      return item ? JSON.parse(item) : initialValue;
+      // Merge the parsed item with the initialValue to ensure new properties are always present
+      return item ? { ...initialValue, ...JSON.parse(item) } : initialValue;
     } catch (error) {
       console.error('Error reading from localStorage:', error);
       return initialValue;
