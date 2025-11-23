@@ -1,9 +1,88 @@
 import React from 'react';
 import { useData } from '@/context/DataContext';
-// Removed date-fns and table imports for now
+import {
+  Table, // Keep Table imports for now, but not rendering it fully
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { format, isToday } from 'date-fns'; // Reintroducing date-fns
 
 const TodaysTransactions: React.FC = () => {
   const { data } = useData();
+
+  // Helper to get entity names (reintroduced for filtering logic)
+  const getEmployeeName = (id?: string) => id ? (data.employees.find(e => e.id === id)?.name || `Unknown Employee (${id})`) : 'N/A';
+  const getVendorName = (id?: string) => id ? (data.vendors.find(v => v.id === id)?.name || `Unknown Vendor (${id})`) : 'N/A';
+  const getDealerName = (id?: string) => id ? (data.dealers.find(d => d.id === id)?.name || `Unknown Dealer (${id})`) : 'N/A';
+  const getProductName = (sku: string) => data.products.find(p => p.sku === sku)?.name || `Unknown Product (${sku})`;
+  const getLocationName = (id?: string) => id ? (data.shelfLocations.find(l => l.id === id)?.name || `Unknown Location (${id})`) : 'N/A';
+
+  // Combine all transaction types into a single array and filter for today
+  const allTransactions = [
+    ...data.saleTransactions.map(t => ({
+      type: 'Sale',
+      date: new Date(t.date),
+      details: (
+        <>
+          Sold to {getDealerName(t.dealerId)} by {getEmployeeName(t.employeeId)}. Total: ${t.totalAmount.toFixed(2)}
+          <ul className="list-disc list-inside ml-4">
+            {t.productsSold.map((p, i) => (
+              <li key={i}>{getProductName(p.sku)} (Qty: {p.quantity}) @ ${p.price.toFixed(2)}/unit</li>
+            ))}
+          </ul>
+        </>
+      ),
+    })),
+    ...data.bulkDeliveries.map(t => ({
+      type: 'Bulk Purchase',
+      date: new Date(t.date),
+      details: (
+        <>
+          Purchased {t.quantity} units of {getProductName(t.productId)} from {getVendorName(t.vendorId)}
+          {t.employeeId && ` by ${getEmployeeName(t.employeeId)}`}
+        </>
+      ),
+    })),
+    ...data.bulkBreakings.map(t => ({
+      type: 'Bulk Breaking',
+      date: new Date(t.date),
+      details: (
+        <>
+          Broke down {t.quantityToBreak} units of bulk {getProductName(t.bulkProductId)} by {getEmployeeName(t.employeeId)}.
+          Resulting products:
+          <ul className="list-disc list-inside ml-4">
+            {t.brokenIntoProducts.map((p, i) => (
+              <li key={i}>{getProductName(p.sku)} (Qty: {p.quantity})</li>
+            ))}
+          </ul>
+        </>
+      ),
+    })),
+    ...data.inventoryMovements.map(t => ({
+      type: 'Inventory Movement',
+      date: new Date(t.date),
+      details: (
+        <>
+          Moved {t.quantity} units of {getProductName(t.productId)} from {getLocationName(t.fromLocationId)} to {getLocationName(t.toLocationId)} by {getEmployeeName(t.employeeId)}
+        </>
+      ),
+    })),
+    ...data.productReceipts.map(t => ({
+      type: 'Product Receipt',
+      date: new Date(t.date),
+      details: (
+        <>
+          Received {t.quantity} units of {getProductName(t.productId)} at {getLocationName(t.toLocationId)}
+          {t.vendorId && ` from ${getVendorName(t.vendorId)}`}
+          {t.employeeId && ` by ${getEmployeeName(t.employeeId)}`}
+        </>
+      ),
+    })),
+  ].filter(transaction => isToday(transaction.date)) // Filter for today's transactions
+  .sort((a, b) => b.date.getTime() - a.date.getTime()); // Sort by date, newest first
 
   return (
     <div className="space-y-6">
@@ -12,8 +91,14 @@ const TodaysTransactions: React.FC = () => {
         This page displays all transactions that have occurred today.
       </p>
       <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow overflow-x-auto">
-        <p>This is a test message for Today's Transactions page.</p>
-        <p>Number of employees: {data.employees.length}</p>
+        {allTransactions.length === 0 ? (
+          <p className="text-muted-foreground text-center">No transactions recorded today yet.</p>
+        ) : (
+          <p className="text-muted-foreground text-center">
+            {allTransactions.length} transactions recorded today. (Table rendering is currently commented out for debugging.)
+          </p>
+          // The actual Table component rendering is still commented out
+        )}
       </div>
     </div>
   );
