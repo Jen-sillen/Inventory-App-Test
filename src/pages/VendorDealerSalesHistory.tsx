@@ -13,6 +13,8 @@ import { format } from 'date-fns';
 const VendorDealerSalesHistory: React.FC = () => {
   const { data } = useData();
 
+  console.log("VendorDealerSalesHistory - Data from context:", data); // Diagnostic log
+
   // Combine sales and bulk deliveries into a single array for display
   const combinedHistory = [
     ...data.saleTransactions.map(transaction => ({
@@ -40,6 +42,8 @@ const VendorDealerSalesHistory: React.FC = () => {
       employeeId: delivery.employeeId,
     })),
   ].sort((a, b) => b.date.getTime() - a.date.getTime()); // Sort by date, newest first
+
+  console.log("VendorDealerSalesHistory - Combined history:", combinedHistory); // Diagnostic log
 
   const getPartnerName = (partnerId: string, type: 'Sale' | 'Purchase') => {
     if (type === 'Sale') {
