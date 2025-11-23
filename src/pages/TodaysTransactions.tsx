@@ -37,18 +37,19 @@ const TodaysTransactions: React.FC = () => {
     ...data.productReceipts.map(t => ({
       type: 'Product Receipt',
       date: t.date,
-      // Simplified details for debugging
-      details: `Product Receipt for ${getProductName(t.productId)} (Qty: ${t.quantity})`,
+      details: `Received ${t.quantity} units of ${getProductName(t.productId)} at ${getLocationName(t.toLocationId)}${t.vendorId ? ` from ${getVendorName(t.vendorId)}` : ''}${t.employeeId ? ` by ${getEmployeeName(t.employeeId)}` : ''}`,
     })),
   ].filter(transaction => {
     try {
+      console.log(`Processing transaction type: ${transaction.type}, raw date: ${transaction.date}`);
       const transactionDate = new Date(transaction.date);
+      console.log(`Parsed date object: ${transactionDate}`);
       if (isNaN(transactionDate.getTime())) {
-        console.error("Invalid date string for transaction:", transaction.date, "Type:", transaction.type);
+        console.error("404 Error: Invalid date string for transaction:", transaction.date, "Type:", transaction.type);
         return false;
       }
       const isTransactionToday = isToday(transactionDate);
-      // console.log(`Transaction: ${transaction.type}, Date: ${transaction.date}, Is Today: ${isTransactionToday}`); // More detailed log
+      console.log(`Transaction: ${transaction.type}, Date: ${transaction.date}, Is Today: ${isTransactionToday}`);
       return isTransactionToday;
     } catch (e) {
       console.error("Error processing transaction date:", transaction.date, "Type:", transaction.type, e);
