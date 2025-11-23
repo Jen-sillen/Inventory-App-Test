@@ -12,7 +12,7 @@ const TodaysTransactions: React.FC = () => {
   const getProductName = (sku: string) => data.products.find(p => p.sku === sku)?.name || `Unknown Product (${sku})`;
   const getLocationName = (id?: string) => id ? (data.shelfLocations.find(l => l.id === id)?.name || `Unknown Location (${id})`) : 'N/A';
 
-  // Combine saleTransactions and bulkDeliveries into a single array and filter for today
+  // Combine all transaction types into a single array and filter for today
   const allTransactions = [
     ...data.saleTransactions.map(t => ({
       type: 'Sale',
@@ -23,6 +23,11 @@ const TodaysTransactions: React.FC = () => {
       type: 'Bulk Purchase',
       date: t.date,
       details: `Purchased ${t.quantity} units of ${getProductName(t.productId)} from ${getVendorName(t.vendorId)}`,
+    })),
+    ...data.bulkBreakings.map(t => ({
+      type: 'Bulk Breaking',
+      date: t.date,
+      details: `Broke down bulk ${getProductName(t.bulkProductId)} by ${getEmployeeName(t.employeeId)}.`,
     })),
   ].filter(transaction => {
     try {
